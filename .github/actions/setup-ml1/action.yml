@@ -1,0 +1,75 @@
+# Installs the ml1 MinLang compiler onto the runner PATH.
+# Prefers a prebuilt GitHub Release binary (~seconds); falls back to building
+# from source with cargo when no release exists yet (~minutes).
+#
+# Usage (any repo in the org, once Actions access is enabled for this repo):
+#   - uses: codeshift-ai-solutions/minlang-releases/.github/actions/setup-ml1@main
+#     with:
+#       version: latest            # or v0.1.0
+#       token: ${{ github.token }} # needs read access to minlang-core releases
+
+name: Setup ml1
+description: Install the MinLang compiler (prebuilt release binary, cargo fallback)
+
+inputs:
+  version:
+    description: Release tag to install (e.g. v0.1.0) or "latest"
+    default: latest
+  token:
+    description: GitHub token with read access to the minlang-core repository
+    default: ${{ github.token }}
+  repo:
+    description: Repository hosting ml1 releases
+    default: codeshift-ai-solutions/minlang-releases
+
+runs:
+  using: composite
+  steps:
+    - name: Install ml1 (release binary, cargo fallback)
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ML1_VERSION: ${{ inputs.version }}
+        ML1_REPO: ${{ inputs.repo }}
+      run: |
+        set -euo pipefail
+        dest="${RUNNER_TEMP}/ml1-bin"
+        mkdir -p "${dest}"
+
+        os="$(uname -s)"; arch="$(uname -m)"
+        case "${os}-${arch}" in
+          Darwin-arm64) target="aarch64-apple-darwin"; ext=tar.gz ;;
+          Darwin-x86_64) target="x86_64-apple-darwin"; ext=tar.gz ;;
+          Linux-aarch64) target="aarch64-unknown-linux-gnu"; ext=tar.gz ;;
+          Linux-x86_64) target="x86_64-unknown-linux-gnu"; ext=tar.gz ;;
+          MINGW*-x86_64|MSYS*-x86_64) target="x86_64-pc-windows-msvc"; ext=zip ;;
+          *) echo "unsupported platform ${os}/${arch}" >&2; exit 1 ;;
+        esac
+
+        tag="${ML1_VERSION}"
+        if [ "${tag}" = "latest" ]; then
+          tag="$(gh release view --repo "${ML1_REPO}" --json tagName -q .tagName 2>/dev/null || true)"
+        fi
+
+        if [ -n "${tag}" ]; then
+          name="ml1-${tag}-${target}"
+          echo "==> downloading ${name}.${ext} from ${ML1_REPO}"
+          gh release download "${tag}" --repo "${ML1_REPO}" \
+            --pattern "${name}.${ext}" --dir "${RUNNER_TEMP}"
+          if [ "${ext}" = "zip" ]; then
+            unzip -q "${RUNNER_TEMP}/${name}.zip" -d "${RUNNER_TEMP}"
+          else
+            tar -xzf "${RUNNER_TEMP}/${name}.${ext}" -C "${RUNNER_TEMP}"
+          fi
+          mv "${RUNNER_TEMP}/${name}/"ml1* "${dest}/"
+        else
+          echo "==> no release found; building ml1 from source (cargo)"
+          src="${RUNNER_TEMP}/minlang-core-src"
+          gh repo clone "${ML1_REPO}" "${src}" -- --depth 1
+          cargo install --path "${src}/compiler/crates/minlang-cli" --locked --root "${RUNNER_TEMP}/ml1-cargo"
+          mv "${RUNNER_TEMP}/ml1-cargo/bin/"ml1* "${dest}/"
+        fi
+
+        chmod +x "${dest}/"ml1* 2>/dev/null || true
+        echo "${dest}" >> "$GITHUB_PATH"
+        "${dest}/ml1" | head -1

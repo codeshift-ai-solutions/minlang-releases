@@ -1,0 +1,93 @@
+# Validates and compiles a MinLang program. Installs ml1 first if it is not
+# already on PATH (run setup-ml1 beforehand to control the version).
+#
+# Usage:
+#   - uses: codeshift-ai-solutions/minlang-releases/.github/actions/setup-ml1@main
+#   - uses: codeshift-ai-solutions/minlang-releases/.github/actions/minlang-compile@main
+#     with:
+#       file: my-app.ml
+#       target: web        # or godot
+#       out: app           # output root; files land under <out>/generated/
+#       check: "false"     # "true" = fail if committed output is stale
+
+name: MinLang compile
+description: Validate and compile a MinLang program (web or godot target)
+
+inputs:
+  file:
+    description: Path to the .ml source file
+    required: true
+  target:
+    description: Compile target (web | godot)
+    default: web
+  out:
+    description: Output root directory
+    required: true
+  check:
+    description: Run in --check mode (fail when output would change)
+    default: "false"
+  token:
+    description: GitHub token (used only if ml1 must be installed)
+    default: ${{ github.token }}
+  repo:
+    description: Repository hosting ml1 releases
+    default: codeshift-ai-solutions/minlang-releases
+
+runs:
+  using: composite
+  steps:
+    - name: Ensure ml1 is installed
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ML1_REPO: ${{ inputs.repo }}
+      run: |
+        set -euo pipefail
+        if command -v ml1 >/dev/null 2>&1; then
+          exit 0
+        fi
+        dest="${RUNNER_TEMP}/ml1-bin"
+        mkdir -p "${dest}"
+        os="$(uname -s)"; arch="$(uname -m)"
+        case "${os}-${arch}" in
+          Darwin-arm64) target="aarch64-apple-darwin"; ext=tar.gz ;;
+          Darwin-x86_64) target="x86_64-apple-darwin"; ext=tar.gz ;;
+          Linux-aarch64) target="aarch64-unknown-linux-gnu"; ext=tar.gz ;;
+          Linux-x86_64) target="x86_64-unknown-linux-gnu"; ext=tar.gz ;;
+          MINGW*-x86_64|MSYS*-x86_64) target="x86_64-pc-windows-msvc"; ext=zip ;;
+          *) echo "unsupported platform ${os}/${arch}" >&2; exit 1 ;;
+        esac
+        tag="$(gh release view --repo "${ML1_REPO}" --json tagName -q .tagName 2>/dev/null || true)"
+        if [ -n "${tag}" ]; then
+          name="ml1-${tag}-${target}"
+          gh release download "${tag}" --repo "${ML1_REPO}" \
+            --pattern "${name}.${ext}" --dir "${RUNNER_TEMP}"
+          if [ "${ext}" = "zip" ]; then
+            unzip -q "${RUNNER_TEMP}/${name}.zip" -d "${RUNNER_TEMP}"
+          else
+            tar -xzf "${RUNNER_TEMP}/${name}.${ext}" -C "${RUNNER_TEMP}"
+          fi
+          mv "${RUNNER_TEMP}/${name}/"ml1* "${dest}/"
+        else
+          src="${RUNNER_TEMP}/minlang-core-src"
+          gh repo clone "${ML1_REPO}" "${src}" -- --depth 1
+          cargo install --path "${src}/compiler/crates/minlang-cli" --locked --root "${RUNNER_TEMP}/ml1-cargo"
+          mv "${RUNNER_TEMP}/ml1-cargo/bin/"ml1* "${dest}/"
+        fi
+        chmod +x "${dest}/"ml1* 2>/dev/null || true
+        echo "${dest}" >> "$GITHUB_PATH"
+
+    - name: Validate
+      shell: bash
+      run: ml1 validate "${{ inputs.file }}"
+
+    - name: Compile
+      shell: bash
+      run: |
+        set -euo pipefail
+        extra=""
+        if [ "${{ inputs.check }}" = "true" ]; then
+          extra="--check"
+        fi
+        ml1 compile "${{ inputs.file }}" --target "${{ inputs.target }}" \
+          --out "${{ inputs.out }}" ${extra}
