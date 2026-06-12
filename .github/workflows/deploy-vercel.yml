@@ -1,0 +1,159 @@
+# Reusable Vercel deploy for MinLang web apps.
+#
+# Source of truth: minlang-core/.github/mirror-workflows/ — synced to the
+# PUBLIC minlang-releases mirror's .github/workflows/ on every release, which
+# is where scaffolded repos call it from:
+#
+#   jobs:
+#     deploy:
+#       uses: codeshift-ai-solutions/minlang-releases/.github/workflows/deploy-vercel.yml@main
+#       secrets: inherit
+#
+# Credentials (via `secrets: inherit`):
+#   VERCEL_TOKEN       account token (org-level secret)
+#   VERCEL_ORG_ID      team/org id (org-level secret)
+#   VERCEL_PROJECT_ID  per-repo project id (optional: first run links by name,
+#                      prints the id, and tells you to pin it)
+#
+# The Vercel CLI hard-errors when VERCEL_ORG_ID is set without
+# VERCEL_PROJECT_ID, so this workflow has two explicit paths: pinned project
+# (all three set — no `vercel link`, env-var driven pull/build/deploy) and
+# first-run link-by-name (project id absent — link with both ids stripped
+# from the environment, then drive off .vercel/project.json).
+
+name: Deploy MinLang app (Vercel)
+
+on:
+  workflow_call:
+    inputs:
+      file:
+        description: "MinLang source file (default: the single *.ml at the repo root)"
+        type: string
+        default: ""
+      app-dir:
+        description: "Next.js shell directory"
+        type: string
+        default: "app"
+      project:
+        description: "Vercel project name for first-run linking (default: repository name)"
+        type: string
+        default: ""
+      verify:
+        description: "Recompile the .ml in --check mode and fail on drift"
+        type: boolean
+        default: true
+      pnpm-workspace:
+        description: "Install/test from the repo root pnpm workspace instead of app-dir"
+        type: boolean
+        default: false
+    secrets:
+      VERCEL_TOKEN:
+        required: false
+      VERCEL_ORG_ID:
+        required: false
+      VERCEL_PROJECT_ID:
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Resolve the MinLang source file
+        id: src
+        run: |
+          file="${{ inputs.file }}"
+          if [ -z "${file}" ]; then
+            set -- *.ml
+            if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
+              echo "error: expected exactly one .ml file at the repo root (found: $*) — pass the 'file' input" >&2
+              exit 1
+            fi
+            file="$1"
+          fi
+          echo "file=${file}" >> "$GITHUB_OUTPUT"
+
+      - name: Generated output is current
+        if: inputs.verify
+        uses: codeshift-ai-solutions/minlang-releases/.github/actions/minlang-compile@main
+        with:
+          file: ${{ steps.src.outputs.file }}
+          target: web
+          out: ${{ inputs.app-dir }}
+          check: "true"
+
+      - name: Setup Node + pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+
+      - name: Install, typecheck, test
+        run: |
+          if [ "${{ inputs.pnpm-workspace }}" = "true" ]; then
+            pnpm install --frozen-lockfile
+            pnpm -r run typecheck
+            pnpm -r run test
+          else
+            pnpm --dir "${{ inputs.app-dir }}" install --frozen-lockfile
+            pnpm --dir "${{ inputs.app-dir }}" run typecheck
+            pnpm --dir "${{ inputs.app-dir }}" run test
+          fi
+
+      - name: Gate on Vercel credentials
+        id: gate
+        run: |
+          missing=""
+          [ -z "${VERCEL_TOKEN}" ] && missing="VERCEL_TOKEN"
+          [ -z "${VERCEL_ORG_ID}" ] && missing="${missing:+${missing}, }VERCEL_ORG_ID"
+          if [ -n "${missing}" ]; then
+            echo "notice: missing secret(s): ${missing} — skipping deploy"
+            echo "Deploy skipped — missing secret(s): ${missing}" >> "$GITHUB_STEP_SUMMARY"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy (pinned project)
+        if: steps.gate.outputs.enabled == 'true' && env.VERCEL_PROJECT_ID != ''
+        working-directory: ${{ inputs.app-dir }}
+        run: |
+          pnpm dlx vercel@latest pull --yes --environment=production --token "${VERCEL_TOKEN}"
+          pnpm dlx vercel@latest build --prod --token "${VERCEL_TOKEN}"
+          url=$(pnpm dlx vercel@latest deploy --prebuilt --prod --yes --token "${VERCEL_TOKEN}")
+          echo "deployed: $url"
+          { echo "### Deployed to Vercel"; echo "$url"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy (first run — link by name, then pin)
+        if: steps.gate.outputs.enabled == 'true' && env.VERCEL_PROJECT_ID == ''
+        working-directory: ${{ inputs.app-dir }}
+        env:
+          PROJECT_NAME: ${{ inputs.project != '' && inputs.project || github.event.repository.name }}
+        run: |
+          # The CLI errors when VERCEL_ORG_ID is set without VERCEL_PROJECT_ID,
+          # so this whole leg runs with both stripped; after `link`,
+          # .vercel/project.json carries the ids for pull/build/deploy.
+          scope="${VERCEL_ORG_ID}"
+          unset VERCEL_ORG_ID VERCEL_PROJECT_ID
+          pnpm dlx vercel@latest link --yes --project "${PROJECT_NAME}" \
+            --scope "${scope}" --token "${VERCEL_TOKEN}"
+          project_id=$(python3 -c "import json; print(json.load(open('.vercel/project.json'))['projectId'])")
+          pnpm dlx vercel@latest pull --yes --environment=production --token "${VERCEL_TOKEN}"
+          pnpm dlx vercel@latest build --prod --token "${VERCEL_TOKEN}"
+          url=$(pnpm dlx vercel@latest deploy --prebuilt --prod --yes --token "${VERCEL_TOKEN}")
+          echo "deployed: $url"
+          echo "notice: pin VERCEL_PROJECT_ID=${project_id} as a repo secret to skip linking on future runs"
+          {
+            echo "### Deployed to Vercel"
+            echo "$url"
+            echo ""
+            echo "Linked Vercel project \`${PROJECT_NAME}\` (id \`${project_id}\`)."
+            echo "Pin it: add repo secret \`VERCEL_PROJECT_ID=${project_id}\`."
+          } >> "$GITHUB_STEP_SUMMARY"

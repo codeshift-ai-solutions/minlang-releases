@@ -11,10 +11,16 @@ $ErrorActionPreference = "Stop"
 $headers = @{}
 if ($env:GH_TOKEN) { $headers["Authorization"] = "Bearer $($env:GH_TOKEN)" }
 
-if ($Version -eq "latest") {
-	$release = Invoke-RestMethod -Headers $headers "https://api.github.com/repos/$Repo/releases/latest"
-} else {
-	$release = Invoke-RestMethod -Headers $headers "https://api.github.com/repos/$Repo/releases/tags/v$($Version.TrimStart('v'))"
+try {
+	if ($Version -eq "latest") {
+		$release = Invoke-RestMethod -Headers $headers "https://api.github.com/repos/$Repo/releases/latest"
+	} else {
+		$release = Invoke-RestMethod -Headers $headers "https://api.github.com/repos/$Repo/releases/tags/v$($Version.TrimStart('v'))"
+	}
+} catch {
+	throw ("could not resolve release '$Version' of $Repo. " +
+		"If the repo is private, set `$env:GH_TOKEN. " +
+		"If it is public, check the repo name and that a release exists. ($_)")
 }
 $ver = $release.tag_name.TrimStart("v")
 $name = "ml1-v$ver-x86_64-pc-windows-msvc"

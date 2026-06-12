@@ -32,7 +32,8 @@ Set up a new MinLang web app and get it running, then ask me what to build.
 1. Install the MinLang compiler (ml1):
    macOS/Linux: bash <(curl -fsSL https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.sh)
    Windows PowerShell: iwr -useb https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.ps1 | iex
-   Verify with: ml1 --help. Also ensure Node 22+ and pnpm (corepack enable).
+   Verify with: ml1 --help. Also ensure Node 22+, then run:
+   corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 2. Scaffold the app (replace my-app with a short kebab-case name):
    npm create minlang-app my-app && cd my-app
