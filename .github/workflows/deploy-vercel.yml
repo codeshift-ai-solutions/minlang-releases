@@ -46,6 +46,10 @@ on:
         description: "Install/test from the repo root pnpm workspace instead of app-dir"
         type: boolean
         default: false
+      previews:
+        description: "Render per-screen screenshot previews (mobile + desktop) and upload them as a 'screen-previews' artifact"
+        type: boolean
+        default: false
     secrets:
       VERCEL_TOKEN:
         required: false
@@ -106,6 +110,30 @@ jobs:
             pnpm --dir "${{ inputs.app-dir }}" run typecheck
             pnpm --dir "${{ inputs.app-dir }}" run test
           fi
+          # Skin contract lint (guarded: older scaffolded repos lack the script)
+          if [ -f scripts/lint-skins.mjs ] && [ -d app/skins ]; then
+            node scripts/lint-skins.mjs app/skins
+          fi
+
+      - name: Render screen previews
+        if: inputs.previews
+        run: |
+          # Guarded: older scaffolded repos lack the preview spec
+          if [ -f "${{ inputs.app-dir }}/e2e/99-screens.spec.ts" ]; then
+            pnpm --dir "${{ inputs.app-dir }}" exec playwright install --with-deps chromium
+            pnpm --dir "${{ inputs.app-dir }}" run test:e2e e2e/99-screens.spec.ts
+          else
+            echo "notice: ${{ inputs.app-dir }}/e2e/99-screens.spec.ts not found — skipping previews"
+          fi
+
+      - name: Upload screen previews
+        if: inputs.previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: screen-previews
+          path: ${{ inputs.app-dir }}/screen-previews/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Gate on Vercel credentials
         id: gate
