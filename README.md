@@ -7,6 +7,11 @@ and the MinLang **language bundle** for LLMs (attached to every
 release). Source lives in the private `minlang-core` repository.
 License for the distributed runtime packages: MIT.
 
+## Documentation
+
+Guides, the language reference, and the cookbook: https://codeshift-ai-solutions.github.io/minlang-releases/
+(served from this repository's `docs/` directory via GitHub Pages).
+
 ## Install ml1
 
 | Channel | Command |

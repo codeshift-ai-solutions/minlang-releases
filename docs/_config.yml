@@ -1,0 +1,11 @@
+title: MinLang
+description: One .ml file compiles into a complete, tested, deterministic web app.
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+search_enabled: true
+aux_links:
+  "Downloads (minlang-releases)":
+    - "https://github.com/codeshift-ai-solutions/minlang-releases"
+  "Language bundle (canonical)":
+    - "https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md"
