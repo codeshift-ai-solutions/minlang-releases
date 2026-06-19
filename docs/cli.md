@@ -47,7 +47,7 @@ Full pipeline: lex → parse → validate → lower to IR → generate → write
 
 | Flag | Meaning |
 |---|---|
-| `--target web` | Emit a Next.js app: domain types + Zod, pure reducers and queries, screen schemas, server actions, App Router pages, Vitest tests, and ASCII wireframes (`ui/wire/*.txt`) |
+| `--target web` | Emit a Next.js app: domain types + Zod, pure reducers and queries, screen schemas, server actions, App Router pages, Vitest tests, and ASCII wireframes (`ui/wire/*.mlui`) |
 | `--target godot` | Emit the C#/Godot game host pipeline |
 | `--out <dir>` | Output directory (default `generated/`). Scaffolded apps use `--out app`, putting output under `app/generated/` |
 | `--check` | Dry run: report what would change **without writing**, and fail (non-zero) on changed *or* stale files, naming them. This is the CI drift gate |

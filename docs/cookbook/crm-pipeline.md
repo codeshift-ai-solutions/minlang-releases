@@ -304,7 +304,7 @@ test OpenPipelineSwitchesView {
 
 **No per-row delete, by design.** A lost deal isn't deleted; it's moved to `stage: lost` via the same `MoveDeal` action — which keeps history and needs no special vocabulary. See the [cookbook recipe](index.md#per-row-ish-flows-without-per-row-delete).
 
-**What the UI is.** Two screens. `Pipeline`: a deals table (columns `Company`, `Title`, `Stage`, `Owner`, `Amount`, `Created at`, `Actor id`), an "Add deal" form (company picker, title, stage select, owner, amount — `id`/`created_at`/`actor_id` auto-filled), "Move deal" and "Reassign deal" forms with row selectors, and a "Companies" navigation form. `Companies`: the company table, an "Add company" form, and the way back. Compile and read `app/generated/ui/wire/pipeline.txt` / `companies.txt` for the exact wireframes.
+**What the UI is.** Two screens. `Pipeline`: a deals table (columns `Company`, `Title`, `Stage`, `Owner`, `Amount`, `Created at`, `Actor id`), an "Add deal" form (company picker, title, stage select, owner, amount — `id`/`created_at`/`actor_id` auto-filled), "Move deal" and "Reassign deal" forms with row selectors, and a "Companies" navigation form. `Companies`: the company table, an "Add company" form, and the way back. Compile and read `app/generated/ui/wire/pipeline.mlui` / `companies.mlui` for the exact wireframes.
 
 ## Try it
 

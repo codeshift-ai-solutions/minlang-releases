@@ -84,7 +84,7 @@ A mechanical lint enforces the contract (`node scripts/lint-skins.mjs app/skins`
 
 UI review happens on **projections**, not on generated code:
 
-- **Wireframes.** Every compile emits one ASCII wireframe per screen at `generated/ui/wire/<screen>.txt`, at mobile (40 cols) and desktop (80 cols) widths, rendered from the same schema the app renders — wireframe and UI cannot disagree. A PR that changes a screen shows the change as a plain text diff; reviewers see the before/after layout without running anything.
+- **Wireframes.** Every compile emits one ASCII wireframe per screen at `generated/ui/wire/<screen>.mlui`, at mobile (40 cols) and desktop (80 cols) widths, rendered from the same schema the app renders — wireframe and UI cannot disagree. A PR that changes a screen shows the change as a plain text diff; reviewers see the before/after layout without running anything.
 - **Screen previews.** The e2e suite captures rendered screenshots of every screen at mobile (390×844) and desktop (1280×800) viewports; CI uploads them as the `screen-previews` artifact. Locally: `make preview` in a scaffolded app.
 
 Wireframes are projections, never sources — `--check` mode covers them like all generated output, so they can't drift. See [Read a PR](cookbook/index.md#read-a-pr-wire-diff--previews) for the review workflow.

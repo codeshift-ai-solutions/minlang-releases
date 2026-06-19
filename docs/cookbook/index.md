@@ -133,7 +133,7 @@ If you start from a Figma Make export, the adaptation is mostly deletion: remove
 Read it top-down, in this order:
 
 1. **The `.ml` diff** — the only source change. New action? New constraint with its message? Tests present (success + byte-exact failure + state-unchanged assertions)?
-2. **The wireframe diff** (`generated/ui/wire/<screen>.txt`) — the UI change as plain text. A new `[ Archive task ]` form box appearing in `board.txt` at both mobile and desktop widths *is* the feature, visually:
+2. **The wireframe diff** (`generated/ui/wire/<screen>.mlui`) — the UI change as plain text. A new `[ Archive task ]` form box appearing in `board.mlui` at both mobile and desktop widths *is* the feature, visually:
 
    ```text
    + │ ┌ Archive task ────────────────────┐ │

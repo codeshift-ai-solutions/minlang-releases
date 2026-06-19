@@ -118,7 +118,7 @@ test UniqueVisitorNameRejectsDuplicate {
 
 ```bash
 ml1 compile guestbook.ml --target web --out app
-cat app/generated/ui/wire/entries.txt
+cat app/generated/ui/wire/entries.mlui
 ```
 
 ## Try it

@@ -289,7 +289,7 @@ The triads to notice:
 
 ## The wireframes
 
-The compiler emits these from the screens above (`generated/ui/wire/board.txt` and `projects.txt`, mobile sections shown; each file also contains an 80-column desktop rendering):
+The compiler emits these from the screens above (`generated/ui/wire/board.mlui` and `projects.mlui`, mobile sections shown; each file also contains an 80-column desktop rendering):
 
 ```text
 ┌──────────────────────────────────────┐

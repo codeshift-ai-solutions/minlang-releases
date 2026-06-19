@@ -66,7 +66,7 @@ This sounds like ceremony until you've watched it catch a rule that only fired o
 
 You never read or edit `app/generated/` to understand a change. Instead the compiler emits **projections**:
 
-- An **ASCII wireframe** per screen (`generated/ui/wire/<screen>.txt`, mobile and desktop widths). A PR that changes a screen shows the UI change as a plain text diff.
+- An **ASCII wireframe** per screen (`generated/ui/wire/<screen>.mlui`, mobile and desktop widths). A PR that changes a screen shows the UI change as a plain text diff.
 - **Rendered screenshots** of every screen, captured by the e2e suite and uploaded as a CI artifact for pixel-level review.
 
 Output is byte-deterministic: the same `.ml` always produces the same bytes, and CI's `--check` mode fails if committed output drifts from the source. "What does this PR do?" is answered by the `.ml` diff plus the wireframe diff — at the level of *rules and screens*, not framework code.
