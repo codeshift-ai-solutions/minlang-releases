@@ -9,22 +9,21 @@ License for the distributed runtime packages: MIT.
 
 ## Documentation
 
-Guides, the language reference, and the cookbook: https://codeshift-ai-solutions.github.io/minlang-releases/
+Guides, the language reference, and the cookbook:
+[codeshift-ai-solutions.github.io/minlang-releases](https://codeshift-ai-solutions.github.io/minlang-releases/)
 (served from this repository's `docs/` directory via GitHub Pages).
 
 ## Install ml1
 
-| Channel | Command |
-|---------|---------|
-| Shell (macOS/Linux) | `bash <(curl -fsSL https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.sh)` |
-| PowerShell (Windows) | `iwr -useb https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.ps1 \| iex` |
-| GitHub Actions (CI) | `uses: codeshift-ai-solutions/minlang-releases/.github/actions/setup-ml1@main` |
+| Channel | Link | Command |
+|---------|------|---------|
+| Shell (macOS/Linux) | [install.sh](https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.sh) | `bash <(curl -fsSL https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.sh)` |
+| PowerShell (Windows) | [install.ps1](https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.ps1) | `iwr -useb https://raw.githubusercontent.com/codeshift-ai-solutions/minlang-releases/main/install/install.ps1 \| iex` |
+| GitHub Actions (CI) | [setup-ml1 action](https://github.com/codeshift-ai-solutions/minlang-releases/tree/main/.github/actions/setup-ml1) | `uses: codeshift-ai-solutions/minlang-releases/.github/actions/setup-ml1@main` |
 
 ## Language rules for LLMs (stable URL)
 
-```
-https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md
-```
+[Download the latest language bundle](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
 
 ## Start development with an AI coding agent
 
