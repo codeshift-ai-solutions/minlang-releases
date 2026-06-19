@@ -47,7 +47,7 @@ cd my-app
 
 This creates:
 
-- `my-app.ml` — **your entire application**. It starts as a working task tracker.
+- `my-app.ml` — **your entire application**. It starts as a guided "welcome to MinLang" tour you replace with your own domain.
 - `app/` — a thin Next.js shell consuming the published `@minlang/*` runtime packages from npm. No submodule, no monorepo.
 - `Makefile` — `compile`, `test`, `dev`, `build`, `update` targets.
 - A GitHub Actions workflow that verifies and deploys on push.
