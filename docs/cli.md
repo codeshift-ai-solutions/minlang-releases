@@ -15,6 +15,7 @@ ml1 <command>
 |---|---|
 | [`validate`](#ml1-validate) | Validate a `.ml` file against the language rules |
 | [`compile`](#ml1-compile) | Full pipeline: validate + generate the app |
+| [`features`](#ml1-features) | Print the current language feature catalog for LLMs |
 | [`support`](#ml1-support) | Write an agent-facing language support brief |
 | [`update`](#ml1-update) | Update the compiler, runtime pins, and generated output |
 | [`design tokens`](#ml1-design-tokens) | Figma/Tokens Studio/W3C export → `theme` block |
@@ -58,6 +59,20 @@ Web-target specifics:
 - A `theme` block is gated before anything is planned: unmapped keys, malformed hex values, and WCAG AA contrast violations fail the compile.
 - Output is **deterministic** — same `.ml`, same bytes. An inventory lands in `generated/manifest.json`; the web target also emits `generated/MINLANG_LANGUAGE_SUPPORT.md` for language-gap tracking.
 - **Pruning:** after a successful write, files listed in the *previous* `manifest.json` that the new plan no longer produces are deleted (plus emptied directories). Only manifest-listed paths are ever deleted — handwritten files in the output tree are never touched.
+
+## `ml1 features`
+
+```bash
+ml1 features [--out <path>]
+# alias:
+ml1 language features [--out <path>]
+```
+
+Prints or writes an LLM-facing catalog of the language features this `ml1`
+knows: core declarations, supported field shapes, deterministic rules,
+presentation blocks, screen controls, derive builtins, deterministic deal, web
+target support, and explicit non-features. Use this as the first quick context
+load before writing MinLang; the published bundle remains authoritative.
 
 ## `ml1 support`
 
