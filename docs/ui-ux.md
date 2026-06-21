@@ -84,6 +84,10 @@ A mechanical lint enforces the contract (`node scripts/lint-skins.mjs app/skins`
 
 UI review happens on **projections**, not on generated code:
 
+- **Source sketches.** Start screen-heavy work with a hand-authored
+  `ui/design/screens.mlui` sketch. Translate each sketch section into `.ml`
+  `screen` blocks, compile, and compare the generated wireframes. The sketch
+  is editable design intent; it is not compiler input.
 - **Wireframes.** Every compile emits one ASCII wireframe per screen at `generated/ui/wire/<screen>.mlui`, at mobile (40 cols) and desktop (80 cols) widths, rendered from the same schema the app renders — wireframe and UI cannot disagree. A PR that changes a screen shows the change as a plain text diff; reviewers see the before/after layout without running anything.
 - **Screen previews.** The e2e suite captures rendered screenshots of every screen at mobile (390×844) and desktop (1280×800) viewports; CI uploads them as the `screen-previews` artifact. Locally: `make preview` in a scaffolded app.
 
