@@ -65,6 +65,11 @@ make dev                 # http://localhost:3111
 
 Everything under `app/generated/` is compiler output: committed to git, never hand-edited. If you want to change the app, change `my-app.ml` and recompile.
 
+For multi-file package workflows (v6 manifests, lockfiles, compile dependency closure), see the repository examples:
+
+- `examples/multi-file-local/`
+- `examples/multi-file-remote-fixture/`
+
 Two rules save the most time when editing the `.ml`:
 
 1. **Never use `now()`, `today()`, `random()`, or `current_user`.** Time and identity arrive as explicit action inputs (e.g. `created_at`, `actor_id`) that the server fills in automatically. See [Thinking in MinLang](thinking-in-minlang.md).

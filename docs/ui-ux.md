@@ -5,7 +5,7 @@ nav_order: 6
 
 # UI & UX
 
-How MinLang turns declarations into an interface, and how to get a polished, accessible app out of the system — what you can shape today, and what arrives with bundle v5.
+How MinLang turns declarations into an interface, and how to get a polished, accessible app out of the system with the current bundle.
 
 ## How screens become widgets
 
@@ -104,13 +104,6 @@ Wireframes are projections, never sources — `--check` mode covers them like al
 
 Generated screens are mobile-first: tables render responsively, forms stack, and the two wireframe widths (40/80 cols) plus the two preview viewports give you the small- and large-screen story of every change in review. There is a compressed-JS budget (≤ 120 KB) enforced by the e2e suite, which keeps the app light on slow connections.
 
-## Today vs. roadmap (bundle v5)
+## Current scope note
 
-Everything above is available **now**. The following are planned for **bundle v5** and are **not yet available** — don't try to use them; the validator will reject the vocabulary:
-
-- **Presentation layouts**: `feed`, `cards`, and `list` query renderings with declarative field→slot mapping (title, subtitle, meta...), alongside today's `table`.
-- **Per-row action bindings** — inline row actions on collections.
-- **Display metadata** — label fields and formatting hints.
-- **Web asset pipeline** — content-addressed images for web apps.
-
-Until v5 lands, the levers for a distinctive UI are: the `theme` block (colors/typography), skins (per-widget rendering), and screen composition in the `.ml`. New vocabulary always ships as a new, full, versioned bundle — existing programs keep compiling unchanged.
+The current UI surface is exactly what the active bundle declares. New UI vocabulary ships only in new full bundles; if a page in this site and the bundle disagree, the bundle wins.

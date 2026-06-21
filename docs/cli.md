@@ -17,6 +17,10 @@ ml1 <command>
 | [`compile`](#ml1-compile) | Full pipeline: validate + generate the app |
 | [`features`](#ml1-features) | Print the current language feature catalog for LLMs |
 | [`support`](#ml1-support) | Write an agent-facing language support brief |
+| [`package`](#ml1-package-v6) | Resolve lockfiles, graph closure, registry/vendor/cache/update workflows |
+| [`explain`](#ml1-explain-v6) | Graph-backed project/module/dependency/edit/review context reports |
+| [`llm`](#ml1-llm-v6) | Minimized sidecar generation/check workflows |
+| [`ai`](#ml1-ai-v6) | `.mlai` index/search/context/patch-plan workflows |
 | [`update`](#ml1-update) | Update the compiler, runtime pins, and generated output |
 | [`design tokens`](#ml1-design-tokens) | Figma/Tokens Studio/W3C export → `theme` block |
 | [`tokens` / `parse` / `ir`](#inspection-commands) | Inspect the token stream / AST / IR |
@@ -59,6 +63,54 @@ Web-target specifics:
 - A `theme` block is gated before anything is planned: unmapped keys, malformed hex values, and WCAG AA contrast violations fail the compile.
 - Output is **deterministic** — same `.ml`, same bytes. An inventory lands in `generated/manifest.json`; the web target also emits `generated/MINLANG_LANGUAGE_SUPPORT.md` for language-gap tracking.
 - **Pruning:** after a successful write, files listed in the *previous* `manifest.json` that the new plan no longer produces are deleted (plus emptied directories). Only manifest-listed paths are ever deleted — handwritten files in the output tree are never touched.
+
+## `ml1 package` (v6)
+
+```bash
+ml1 package resolve [--manifest <path>] [--lockfile <path>] [--check]
+ml1 package graph [--manifest <path>]
+ml1 package discover --package <name> [--registry <file://...>]
+ml1 package publish --version <x.y.z> [--registry <file://...>] [--dry-run]
+ml1 package audit [--manifest <path>] [--lockfile <path>] [--json]
+ml1 package vendor [--manifest <path>] [--lockfile <path>] [--dir <vendor-dir>]
+ml1 package cache verify|gc [--manifest <path>] [--lockfile <path>] [--check]
+ml1 package update [--manifest <path>] [--lockfile <path>] [--check]
+```
+
+`resolve` computes a deterministic closed compile graph and writes `minlang.lock`. Imports are compile dependencies; after resolve, compile/check use pinned local/cache bytes rather than runtime source links or live fetch.
+
+## `ml1 explain` (v6)
+
+```bash
+ml1 explain project [--project <dir>]
+ml1 explain module <name> [--project <dir>]
+ml1 explain dependency <name> [--project <dir>]
+ml1 explain edit <name> [--project <dir>]
+ml1 explain review [--project <dir>]
+```
+
+Writes graph-backed LLM/human context artifacts (`generated/minlang.graph.json`, `generated/minlang.graph.ai.md`, per-module `.ai.md`) and prints deterministic scope reports for safe edits and reviews.
+
+## `ml1 llm` (v6)
+
+```bash
+ml1 llm sidecars [--project <dir>] [--write|--check]
+ml1 llm patch --sidecar <file>.ml.min --patch <patch.json> [--check]
+```
+
+Generates/checks minimized sidecars (`.ml.min` + `.ml.map.json`) as derivative artifacts bound to canonical `.ml` sources.
+
+## `ml1 ai` (v6)
+
+```bash
+ml1 ai index [--project <dir>] [--check]
+ml1 ai search <intent> [--project <dir>] [--budget 1000|2000|4000|8000|16000]
+ml1 ai context <decl-id> [--project <dir>] [--budget 1000|2000|4000|8000|16000]
+ml1 ai patch-plan <decl-id> --intent <text> [--project <dir>]
+ml1 ai apply-patch <patch.json> [--project <dir>]
+```
+
+Provides `.mlai` index/search/context-pack workflows for tiny-token agent loops. Outputs are deterministic derivatives of the same compile graph.
 
 ## `ml1 features`
 

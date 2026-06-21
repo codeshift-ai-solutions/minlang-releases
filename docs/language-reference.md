@@ -3,15 +3,24 @@ title: Language reference
 nav_order: 4
 ---
 
-# Language reference (bundle v4)
+# Language reference (bundle v6)
 
-The complete human-readable reference for MinLang as defined by language bundle **v4**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
+The complete human-readable reference for MinLang as defined by language bundle **v6**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
 
 ```text
 https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md
 ```
 
-— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1–v3 remains valid under v4.
+— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1-v5 remains valid under v6.
+
+## Package/module surface (v6)
+
+Multi-file projects declare package and module identity in `minlang.toml`, with explicit `module` path mapping and optional pinned dependencies. `minlang.lock` records the resolved closure.
+
+- `module`/`import`/`export` control cross-module visibility.
+- Imports are compile dependencies; they do not create runtime source links.
+- Remote sources are fetch-time locations only and must be hash-pinned before compile.
+- Compile runs from local + cached verified bytes in a closed graph.
 
 ## Program structure
 
@@ -270,9 +279,9 @@ test UniqueCompanyNameRejectsDuplicate {
 
 Every critical constraint requires the **test triad** (D11): a success test, a failure test with the exact message, and assertions proving the rejected mutation changed nothing. Each compiles to a Vitest file that must pass unmodified.
 
-## The validator: 35 detectors
+## The validator: 45 detectors
 
-`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4). Optional-construct detectors only fire when the construct is declared.
+`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4), D28–D35 full-app declarations (v5), and D36–D45 package/module/compile-graph rules (v6). Optional-construct detectors only fire when the construct is declared.
 
 | ID | Rejects | Why |
 |----|---------|-----|
@@ -303,5 +312,16 @@ Every critical constraint requires the **test triad** (D11): a success test, a f
 | D25 | Invalid board layout (unknown kind, missing `columns` for `dual_hands`) | Layout metadata must be complete |
 | D26 | Derive builtin outside the v4 set, or arg/return mismatch | Closed builtin set per bundle |
 | D27 | `deal` touching `random()`/`now()` or non-literal profile/seed | Deal is not runtime RNG |
+| D28-D35 | Invalid full-app declarations (secret/config/service/pipeline/prompt/file/rich-screen/shadowing) | Full-app web additions stay typed, deterministic, and boundary-safe |
+| D36 | Duplicate package/module identity | Closed graph identity must be unique |
+| D37 | Unresolved import | Every imported module must resolve in the compile graph |
+| D38 | Private cross-module access | Cross-module symbols must be exported and imported explicitly |
+| D39 | Ambiguous unqualified symbol | Name resolution must be deterministic |
+| D40 | Import cycle | Disallowed cycles are rejected |
+| D41 | Incompatible bundle dependency | Dependency bundle pins must be authority-compatible |
+| D42 | Unresolved compile dependency | Compile inputs must exist as verified bytes |
+| D43 | Lockfile/source hash mismatch | Lockfile closure must match actual verified bytes |
+| D44 | Remote capsule hash mismatch | Pinned hashes must match fetched bytes |
+| D45 | Unsigned/untrusted/policy-denied package | Trust/license/capability policy gates package acceptance |
 
 When the validator and any document disagree, the stricter rule from the **bundle** applies. Download the canonical bundle: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).

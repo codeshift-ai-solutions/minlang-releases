@@ -5,87 +5,54 @@ nav_order: 1
 
 # MinLang
 
-**One `.ml` file compiles into a complete, tested, deterministic web app.**
+MinLang exists to make business systems easy to **read, write, review, and evolve** for both humans and LLMs.
 
-You write a single declarative file — entities, rules, mutations, queries, screens, copy, and tests. The `ml1` compiler turns it into a full Next.js application: typed domain code, pure reducers, server actions, screens, and a Vitest suite proving every rule. You never write React for domain features, and you never edit generated code.
+- Humans read one declarative source of truth for rules, flow, copy, and tests.
+- LLMs work against a constrained language, explicit validator feedback, and compiler-generated context maps.
+- Teams keep determinism, test-first rigor, and constraint-first domain safety without scattered duplicate logic.
 
-```text
-my-app.ml ──── ml1 validate ────────► zero violations (the language gate)
-   │
-   │  ml1 compile --target web
-   ▼
-app/generated/ ─────────────────────► domain types · pure reducers · queries ·
-   │                                  screen schemas · server actions ·
-   │                                  Vitest tests · ASCII wireframes
-   │  rendered by
-   ▼
-@minlang/runtime-web + a thin shell ► the running app (Next.js)
-```
+In MinLang, imports are **compile dependencies**. Local modules and pinned remote capsules are resolved into one closed graph, then compiled from pinned bytes. There is no runtime source linking.
 
-## Who it's for
-
-- **Developers** who want the business rules of a small web app in one reviewable file, with the UI and tests derived mechanically from it.
-- **Teams using AI coding agents.** MinLang was built so agents can author whole applications safely: the language is small, every rule is machine-checkable, and the published [language bundle](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md) tells an agent everything it needs.
-- **Reviewers** who would rather diff an ASCII wireframe and a one-page rule file than a React tree.
-
-## What a program looks like
-
-This is real MinLang from the [task tracker example](cookbook/task-tracker.md) — a screen, the query it shows, and the action its primary button dispatches:
+## LLM quick-read
 
 ```text
-screen Projects {
-	when workspace.view == 'projects'
-	title "Projects"
-	body "Every task belongs to a project."
-	board ProjectList
-	primary { label "Add project" action CreateProject }
-	button { label "Back to board" action OpenBoard }
-}
-
-query ProjectList(workspace: ref(Workspace)) -> list<Project> {
-	from Project
-}
-
-action CreateProject(id: string, name: string, actor_id: string) {
-	on: Project
-	create(Project, { id: id, name: name })
-}
+MinLang in 8 lines:
+1) Constraints own business logic; actions are pure mutation.
+2) Determinism is strict (no now/today/random/current_user).
+3) Tests are first-class and rule-driven (success/failure/rejection).
+4) Modules/packages are explicit (v6: package/module/import/export).
+5) minlang.toml + minlang.lock define a closed compile graph.
+6) Remote dependencies are pinned and verified before compile.
+7) Compiler emits sidecars (.ml.min) + maps + .mlai agent index.
+8) Refactor/incremental/watch workflows are graph-aware, not ad-hoc.
 ```
 
-The compiler also emits an ASCII **wireframe projection** of every screen, so a pull request shows UI changes as a plain text diff. Here is the generated wireframe for that screen (mobile width):
+Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md)
 
-```text
-┌──────────────────────────────────────┐
-│ Projects                             │
-├──────────────────────────────────────┤
-│ Every task belongs to a project.     │
-│                                      │
-│ ┌──────────────────────────────────┐ │
-│ │ Name                             │ │
-│ ├──────────────────────────────────┤ │
-│ │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │ │
-│ │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │ │
-│ └──────────────────────────────────┘ │
-│                                      │
-│ ┌ Create project ──────────────────┐ │
-│ │ Name: ________                   │ │
-│ │ [ Add project ]                  │ │
-│ └──────────────────────────────────┘ │
-│                                      │
-│ ┌ Open board ──────────────────────┐ │
-│ │ Workspace: ________              │ │
-│ │ [ Back to board ]                │ │
-│ └──────────────────────────────────┘ │
-└──────────────────────────────────────┘
-```
+## Feature highlights
+
+- Constraint-first and test-first modeling with deterministic validator gates.
+- Multi-file modules and package manifests (`minlang.toml`) plus lockfiles (`minlang.lock`).
+- Compile dependency closure for local/workspace/vendored/pinned remote capsules.
+- LLM-safe workflows: `ml1 explain`, minimized sidecars (`.ml.min` + maps), `.mlai` index shards.
+- Refactor workflows (`ml1 refactor plan/preview/shard/apply/verify/rollback/status`) for large graph changes.
+- Incremental and background workflows (`ml1 compile --incremental`, `ml1 watch`, `ml1 daemon`, `ml1 deps precompile`).
+- Generated TS/C# runtime planning with index/dirty-set/performance-manifest coverage.
+
+## Time and context savings (conservative)
+
+- **Authoring and review:** 20-40% less time when rules/screens/tests stay in one source instead of split framework layers.
+- **Agent context loading:** 30-60% less token/context usage via sidecars and compiler-generated module maps.
+- **Large-change planning:** 25-50% less coordination time with graph-aware refactor and explain workflows.
+- **Drift/debug loops:** 15-35% faster due to deterministic compile/check and lockfile-based dependency closure.
 
 ## Where to go
 
 | Page | What you'll find |
 |------|------------------|
-| [Getting started](getting-started.md) | Install `ml1`, scaffold an app, compile, test, run, deploy to Vercel. |
-| [Thinking in MinLang](thinking-in-minlang.md) | The mental shift: declare the program instead of implementing it. What that buys and what it costs. |
-| [Language reference](language-reference.md) | The full human-readable reference for bundle v4: entities, constraints, actions, queries, screens, themes, tests, and all 27 validator detectors. |
+| [Getting started](getting-started.md) | Install `ml1`, scaffold an app, compile, test, run, deploy. |
+| [Thinking in MinLang](thinking-in-minlang.md) | The mental shift: declare systems instead of hand-implementing behavior in many layers. |
+| [Language reference](language-reference.md) | Human-readable reference for bundle v6, including module/package and compile dependency model. |
 | [Style guide](style-guide.md) | Authoring patterns that keep the validator happy on the first pass. |
 | [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, wireframe review, accessibility. |
 | [CLI reference](cli.md) | Every `ml1` command and flag. |

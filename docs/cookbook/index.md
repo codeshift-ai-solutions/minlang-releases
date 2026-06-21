@@ -14,7 +14,7 @@ Recipes for the situations every MinLang app runs into, plus three complete, ann
 | [Task tracker](task-tracker.md) | The reference example, annotated section by section, with its wireframes |
 | [Sales CRM](crm-pipeline.md) | A pipeline board: flow entity, create-only + mutable entities, lifecycle rules |
 
-Both the guestbook and the CRM listings are validator-clean against bundle v4 — the raw `.ml` files live next to these pages ([guestbook.ml](samples/guestbook.ml), [crm-pipeline.ml](samples/crm-pipeline.ml)).
+Both the guestbook and the CRM listings are validator-clean against current bundle rules — the raw `.ml` files live next to these pages ([guestbook.ml](samples/guestbook.ml), [crm-pipeline.ml](samples/crm-pipeline.ml)).
 
 ---
 
@@ -79,7 +79,7 @@ action ArchiveTask(id: string, actor_id: string) {
 }
 ```
 
-The `id` input on a `set`-action renders as a row selector, so "archive task" becomes a form where the user picks the row — that is the idiomatic per-row interaction. Rows stay in the data (queries return all rows of the source entity today; v5's display metadata will widen what collections can do — see [roadmap](../ui-ux.md#today-vs-roadmap-bundle-v5)). A real bulk reset is what `delete` is for: a `ClearBoard` action that wipes and reseeds.
+The `id` input on a `set`-action renders as a row selector, so "archive task" becomes a form where the user picks the row — that is the idiomatic per-row interaction. Rows stay in the data (queries return all rows of the source entity). A real bulk reset is what `delete` is for: a `ClearBoard` action that wipes and reseeds.
 
 ## Theme an app from Figma
 
