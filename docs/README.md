@@ -18,7 +18,7 @@ Enabling Pages on the mirror is a one-time step — see the setup checklist in `
 
 ## Authoring rules
 
-- **Accuracy over polish.** Every page is a human-friendly *derivative* of the canonical materials (`docs/minlang_language_bundle_v4/`, `docs/ai/language/`, `spec/target-web/`). On any conflict the bundle wins and the page here must be fixed. Never describe unreleased vocabulary as available — mark it as roadmap.
+- **Accuracy over polish.** Every page is a human-friendly *derivative* of the canonical materials (`docs/minlang_language_bundle_v5/`, `docs/ai/language/`, `spec/target-web/`). On any conflict the bundle wins and the page here must be fixed. Never describe unreleased vocabulary as available — mark it as roadmap.
 - **Front matter on every page**: `title`, `nav_order` (and `parent` for nested pages). `nav_exclude: true` keeps a file out of the nav (like this one).
 - **Inter-page links are relative Markdown links** (`getting-started.md`, `../style-guide.md`) — GitHub Pages' `jekyll-relative-links` resolves them. External links to install scripts, the language bundle, and the Actions must use `codeshift-ai-solutions/minlang-releases` URLs (the source repo is private; the mirror step's `sed` re-point is a safety net, not the mechanism).
 - **Sample programs are real files** under `cookbook/samples/` and must stay validator-clean:

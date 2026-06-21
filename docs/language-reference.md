@@ -270,7 +270,7 @@ test UniqueCompanyNameRejectsDuplicate {
 
 Every critical constraint requires the **test triad** (D11): a success test, a failure test with the exact message, and assertions proving the rejected mutation changed nothing. Each compiles to a Vitest file that must pass unmodified.
 
-## The validator: 27 detectors
+## The validator: 35 detectors
 
 `ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4). Optional-construct detectors only fire when the construct is declared.
 
