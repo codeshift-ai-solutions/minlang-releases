@@ -33,6 +33,7 @@ Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/co
 
 - Constraint-first and test-first modeling with deterministic validator gates.
 - Multi-file modules and package manifests (`minlang.toml`) plus lockfiles (`minlang.lock`).
+- Unified trigger/schedule surfaces for server-only API orchestration from UI + cron.
 - Compile dependency closure for local/workspace/vendored/pinned remote capsules.
 - LLM-safe workflows: `ml1 explain`, minimized sidecars (`.ml.min` + maps), `.mlai` index shards.
 - Refactor workflows (`ml1 refactor plan/preview/shard/apply/verify/rollback/status`) for large graph changes.
@@ -53,7 +54,7 @@ Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/co
 | [Vision](vision.md) | The purpose and long-term direction of MinLang — AI-first, intent compression, the 50× ambition. |
 | [Getting started](getting-started.md) | Install `ml1`, scaffold an app, compile, test, run, deploy. |
 | [Thinking in MinLang](thinking-in-minlang.md) | The mental shift: declare systems instead of hand-implementing behavior in many layers. |
-| [Language reference](language-reference.md) | Human-readable reference for bundle v6, including module/package and compile dependency model. |
+| [Language reference](language-reference.md) | Human-readable reference for bundle v7, including trigger/schedule and module/package model. |
 | [Style guide](style-guide.md) | Authoring patterns that keep the validator happy on the first pass. |
 | [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, ASCII UI design bridge, wireframe review, accessibility. |
 | [CLI reference](cli.md) | Every `ml1` command and flag. |

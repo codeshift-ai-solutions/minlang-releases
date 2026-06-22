@@ -19,9 +19,10 @@ The web emitter derives a typed screen schema (data only — no React, no styles
 | `board Query { layout dual_hands columns N }` | a card grid (game layout) |
 | a dispatched action with user-supplied inputs | a **form**: `string`→text, `int`→number, `bool`→checkbox, `enum`→select, `ref(E)`→select over `E`'s rows. Runtime-injected inputs never appear; a create-action's `id` is auto-filled; a `set`-action's `id` renders as a row selector |
 | a dispatched action with no user inputs | a plain button (`primary` or secondary) |
+| a dispatched trigger (`primary`/`button`/`tap`) | a trigger-bound async action button using trigger copy (`pending`/`error`/`success`) and refresh semantics |
 | `button ... when <entity>.<field> == '<member>'` | declarative visibility, evaluated against the singleton row |
 
-Forms never use native `required` attributes — your constraints are the validation, and rejection messages come from the `.ml`. Full derivation rules live in the repo's `spec/target-web/UI_SCHEMA.md`.
+Forms never use native `required` attributes — your constraints are the validation, and rejection messages come from the `.ml`. Trigger dispatches reuse the same async UX surface (live region status, disabled while running, focus-safe keyboard behavior). Full derivation rules live in the repo's `spec/target-web/UI_SCHEMA.md`.
 
 ## Theming from the `.ml`
 

@@ -5,7 +5,7 @@ nav_order: 2
 
 # MinLang Vision
 
-> **About this page.** This page describes the direction and long-term purpose of MinLang. The **shipping language today** is bundle v6 — a deterministic, constraint-first language that compiles to C#/Godot and TypeScript/React web apps. The broader constructs shown here (`app`, `crud`, `workflow`, `dashboard`, `target`, domain packs, etc.) are **aspirational and not yet available**. All such examples are labeled **(future)** or **(illustrative)**. The bundle is the single source of truth for what you can use today: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
+> **About this page.** This page describes the direction and long-term purpose of MinLang. The **shipping language today** is bundle v7 — a deterministic, constraint-first language that compiles to C#/Godot and TypeScript/React web apps. The broader constructs shown here (`app`, `crud`, `workflow`, `dashboard`, `target`, domain packs, etc.) are **aspirational and not yet available**. All such examples are labeled **(future)** or **(illustrative)**. The bundle is the single source of truth for what you can use today: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
 
 ---
 
@@ -45,7 +45,7 @@ MinLang is based on a simple observation:
 
 A business app, game system, simulation, or workflow may contain thousands of lines of code, but the actual human intent behind that code is often much smaller.
 
-**What MinLang looks like today** (shipping, v6):
+**What MinLang looks like today** (shipping, v7):
 
 ```minlang
 entity Patient {
@@ -92,8 +92,9 @@ MinLang today is:
 
 - A deterministic, constraint-first modeling language for entities, rules, actions, queries, screens, and tests.
 - A code generation system that compiles `.ml` source to C#/Godot 4 and TypeScript/React/Tailwind web apps.
-- A strict validator (45 detectors, reject-first) that enforces correct-by-construction invariants before any code is generated.
+- A strict validator (49 detectors, reject-first) that enforces correct-by-construction invariants before any code is generated.
 - A module system (v6) with package manifests, lockfiles, and closed compile-graph enforcement.
+- Unified trigger/schedule surfaces (v7) for server-only API orchestration from UI controls and scheduled jobs.
 - A toolchain (`ml1`) with project graph, incremental compilation, LLM sidecars, agent index, and design bridge commands.
 - A CLI-to-screen bridge (`ml1 design ui`) that turns structured ASCII UI sketches into MinLang `screen` declarations.
 - A published language bundle (canonical rules + detectors + authoring guide) at a stable URL, designed for LLM consumption.
@@ -307,7 +308,7 @@ A MinLang compiler provides a stable contract:
 
 Given MinLang source + compiler version + target generator, the compiler produces predictable output. AI may help write the MinLang; the compiler makes the output reliable.
 
-This is already enforced today: same `.ml` + same `ml1` version = byte-identical output. The validator gate (reject-first, 45 detectors) means a program either compiles clean or produces an actionable diagnostic — there is no "close enough" output.
+This is already enforced today: same `.ml` + same `ml1` version = byte-identical output. The validator gate (reject-first, 49 detectors) means a program either compiles clean or produces an actionable diagnostic — there is no "close enough" output.
 
 ---
 
@@ -356,6 +357,7 @@ The workflow becomes:
 | Deal step, extended screens, scoring derives | Shipping (v4+) |
 | Full-app web declarations (secret, config, service, pipeline, prompt, schema, effect) | Shipping (v5+) |
 | Multi-file modules, package manifests, lockfiles, compile graph | Shipping (v6) |
+| Unified trigger + schedule surfaces | Shipping (v7) |
 | ASCII UI design bridge (`ml1 design ui`) | Shipping (v0.6.4) |
 | LLM toolchain (sidecars, index, explain, refactor, AI-safe agents) | Shipping (v6) |
 | Domain packs | Not yet shipped |

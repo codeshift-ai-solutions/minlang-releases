@@ -3,17 +3,17 @@ title: Language reference
 nav_order: 5
 ---
 
-# Language reference (bundle v6)
+# Language reference (bundle v7)
 
-The complete human-readable reference for MinLang as defined by language bundle **v6**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
+The complete human-readable reference for MinLang as defined by language bundle **v7**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
 
 ```text
 https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md
 ```
 
-— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1-v5 remains valid under v6.
+— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1-v6 remains valid under v7.
 
-## Package/module surface (v6)
+## Package/module surface (v6+)
 
 Multi-file projects declare package and module identity in `minlang.toml`, with explicit `module` path mapping and optional pinned dependencies. `minlang.lock` records the resolved closure.
 
@@ -33,6 +33,8 @@ A program is one `.ml` file containing top-level declarations, in any order:
 | `action` | A named mutation (`create`/`set`/`delete`/`deal` steps only) | per mutation |
 | `query` | A view-model screens read | per view |
 | `screen` | Declarative flow, copy, and controls | optional |
+| `trigger` | Server-only effect/pipeline invocation binding | optional |
+| `schedule` | Time-based trigger invocation surface | optional |
 | `theme` | Static look-and-feel data | optional |
 | `asset` | Declarative asset intent (sprite/audio) | optional |
 | `test` | Executable proof of behavior | per constraint (triad) |
@@ -195,7 +197,7 @@ screen Pipeline {
 }
 ```
 
-The full v3/v4 vocabulary (anything else is rejected, D18/D23):
+The full v3/v4/v7 vocabulary (anything else is rejected, D18/D23/D46):
 
 | Key | Form | Notes |
 |---|---|---|
@@ -206,15 +208,45 @@ The full v3/v4 vocabulary (anything else is rejected, D18/D23):
 | `status` | `status <entity>.<field> { member "copy" ... }` | live status line; the field must be an `enum`, and the copy map must cover **every** member exactly once |
 | `headline` | same shape as `status` | outcome headline |
 | `board` | `board QueryName` or `board QueryName { layout dual_hands columns N }` | names a declared query. Default layout `grid_3x3` renders as a responsive table on the web; `dual_hands` (with required `columns`) renders a card grid |
-| `primary` | `primary { label "..." action Name }` or `primary { label "..." sequence [A, B] }` | the primary control; `action` XOR `sequence` |
-| `button` | `button { label "..." action Name when <entity>.<field> == '<member>' }` | repeatable secondary controls; `when` is an optional visibility condition (same equality-conjunction form) |
-| `tap` | `tap stock\|discard\|slot { action Name }` or with `sequence [...]` | repeatable pile/slot input targets (card games) |
+| `primary` | `primary { label "..." action Name }`, or with `sequence [...]` / `trigger Name` | primary control dispatches declared action/sequence/trigger |
+| `button` | `button { label "..." action Name when <entity>.<field> == '<member>' }`, or with `sequence [...]` / `trigger Name` | repeatable secondary controls; `when` is optional visibility |
+| `tap` | `tap stock\|discard\|slot { action Name }`, or with `sequence [...]` / `trigger Name` | repeatable pile/slot input targets (card games) |
 
 **All copy is static string literals** (D19). Titles, bodies, hints, labels, and every enum-copy entry live in the `.ml`; compilers and emitters must never invent, default, or hardcode user-facing text.
 
 The first screen in declaration order whose `when` holds is the active one. Multi-screen flow is driven by a small UI-state entity plus navigation actions — see the [style guide](style-guide.md).
 
 **Screen-first authoring:** `ml1 design ui` reads a source `.mlui` file (structured `--- screen` headers) and generates MinLang `screen` declarations using only the fixed vocabulary above. It validates all referenced actions, effects, and queries against the existing `.ml` before emitting. The compile gate (`ml1 validate`) remains the authority. See [UI & UX](ui-ux.md) and [CLI](cli.md#ml1-design-ui).
+
+## Triggers and schedules (v7)
+
+`trigger` declarations define reusable server-only remote-IO bindings:
+
+```text
+trigger RegenerateDesign {
+	effect GenerateImage
+	pipeline GenerateDesign
+	action SaveDesign
+	pending "Regenerating design..."
+	error "We could not regenerate that design."
+	success "Design regenerated."
+}
+```
+
+UI controls can dispatch `trigger Name` directly, and schedules can invoke the
+same trigger surface with static timing metadata:
+
+```text
+schedule NightlyRefresh {
+	trigger RegenerateDesign
+	cron "0 3 * * *"
+	timezone "UTC"
+	enabled config NIGHTLY_REFRESH_ENABLED
+}
+```
+
+This keeps remote IO on the server boundary while preserving pure action
+semantics in MinLang core logic.
 
 ## Theme
 
@@ -281,9 +313,9 @@ test UniqueCompanyNameRejectsDuplicate {
 
 Every critical constraint requires the **test triad** (D11): a success test, a failure test with the exact message, and assertions proving the rejected mutation changed nothing. Each compiles to a Vitest file that must pass unmodified.
 
-## The validator: 45 detectors
+## The validator: 49 detectors
 
-`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4), D28–D35 full-app declarations (v5), and D36–D45 package/module/compile-graph rules (v6). Optional-construct detectors only fire when the construct is declared.
+`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4), D28–D35 full-app declarations (v5), D36–D45 package/module/compile-graph rules (v6), and D46–D49 trigger/schedule safety and boundary rules (v7). Optional-construct detectors only fire when the construct is declared.
 
 | ID | Rejects | Why |
 |----|---------|-----|
@@ -309,8 +341,8 @@ Every critical constraint requires the **test triad** (D11): a success test, a f
 | D20 | Malformed screen bindings (`when` shape, non-exhaustive copy maps, unknown query/action names) | Screens bind only declared things, exhaustively |
 | D21 | Invalid derive (unknown builtin, wrong args/return, embedded logic) | Outcome derivation is a pure builtin |
 | D22 | Invalid `deal` step (unknown profile, non-literal seed) | Dealing is compile-time and deterministic |
-| D23 | Unknown extended screen keys (beyond v3 + `button`/`tap`) | v4 vocabulary is fixed too |
-| D24 | Invalid `button`/`tap`/`sequence` (undeclared actions, empty sequence, bad tap target) | Controls dispatch only declared actions |
+| D23 | Unknown extended screen keys (beyond v3 + `button`/`tap` and v7 `trigger` dispatch) | Extended screen vocabulary is fixed too |
+| D24 | Invalid `button`/`tap`/`sequence`/`trigger` dispatch shape | Controls dispatch only declared action/sequence/trigger bindings |
 | D25 | Invalid board layout (unknown kind, missing `columns` for `dual_hands`) | Layout metadata must be complete |
 | D26 | Derive builtin outside the v4 set, or arg/return mismatch | Closed builtin set per bundle |
 | D27 | `deal` touching `random()`/`now()` or non-literal profile/seed | Deal is not runtime RNG |
@@ -325,5 +357,9 @@ Every critical constraint requires the **test triad** (D11): a success test, a f
 | D43 | Lockfile/source hash mismatch | Lockfile closure must match actual verified bytes |
 | D44 | Remote capsule hash mismatch | Pinned hashes must match fetched bytes |
 | D45 | Unsigned/untrusted/policy-denied package | Trust/license/capability policy gates package acceptance |
+| D46 | Invalid trigger declaration / unresolved UI trigger | Trigger declarations and trigger dispatch references must be valid and declared |
+| D47 | Trigger compatibility mismatch | Trigger effect/pipeline/action contracts and injected input origins must align |
+| D48 | Invalid schedule declaration | Schedule trigger/config/cron/timezone bindings must be valid and static |
+| D49 | Trigger/schedule server-boundary leak | Remote IO must stay inside server-only trigger/pipeline handlers |
 
 When the validator and any document disagree, the stricter rule from the **bundle** applies. Download the canonical bundle: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
