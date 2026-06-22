@@ -1,6 +1,6 @@
 ---
 title: UI & UX
-nav_order: 6
+nav_order: 7
 ---
 
 # UI & UX
@@ -84,14 +84,22 @@ A mechanical lint enforces the contract (`node scripts/lint-skins.mjs app/skins`
 
 UI review happens on **projections**, not on generated code:
 
-- **Source sketches.** Start screen-heavy work with a hand-authored
-  `ui/design/screens.mlui` sketch. Translate each sketch section into `.ml`
-  `screen` blocks, compile, and compare the generated wireframes. The sketch
-  is editable design intent; it is not compiler input.
-- **Wireframes.** Every compile emits one ASCII wireframe per screen at `generated/ui/wire/<screen>.mlui`, at mobile (40 cols) and desktop (80 cols) widths, rendered from the same schema the app renders — wireframe and UI cannot disagree. A PR that changes a screen shows the change as a plain text diff; reviewers see the before/after layout without running anything.
+- **Source sketches** (`ui/design/*.mlui`). Start screen-heavy work with a hand-authored
+  `ui/design/screens.mlui` sketch. The file uses the structured source `.mlui` format:
+  one `--- screen` header block per screen plus a freehand ASCII preview body. The header
+  carries the exact MinLang bindings; the preview is for human review only.
+  Run `ml1 design ui ui/design/screens.mlui --app <app>.ml` to generate MinLang `screen`
+  blocks and review them on stdout. Use `--apply` to splice them into the `.ml` between
+  `// mlui:begin screens` / `// mlui:end screens` markers. Use `--check` in CI to verify
+  the `.ml` screens still match the sketch.
+- **Generated wireframes** (`generated/ui/wire/*.mlui`). Every compile emits one ASCII
+  wireframe per screen at 40-col (mobile) and 80-col (desktop) widths, rendered from the
+  same schema the app renders — wireframe and UI cannot disagree. A PR that changes a
+  screen shows the change as a plain text diff. These are projection-only: `--check` covers
+  them like all generated output; never hand-edit them.
 - **Screen previews.** The e2e suite captures rendered screenshots of every screen at mobile (390×844) and desktop (1280×800) viewports; CI uploads them as the `screen-previews` artifact. Locally: `make preview` in a scaffolded app.
 
-Wireframes are projections, never sources — `--check` mode covers them like all generated output, so they can't drift. See [Read a PR](cookbook/index.md#read-a-pr-wire-diff--previews) for the review workflow.
+Wireframes are projections, never sources — `--check` mode covers them like all generated output, so they can't drift. `ui/design/*.mlui` files are source sketches — importable via `ml1 design ui`, safe to edit, and not covered by `--check`. See [CLI reference](cli.md#ml1-design-ui) and [Read a PR](cookbook/index.md#read-a-pr-wire-diff--previews) for the review workflow.
 
 ## Accessibility guarantees
 

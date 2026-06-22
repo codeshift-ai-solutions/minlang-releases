@@ -50,11 +50,12 @@ Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/co
 
 | Page | What you'll find |
 |------|------------------|
+| [Vision](vision.md) | The purpose and long-term direction of MinLang — AI-first, intent compression, the 50× ambition. |
 | [Getting started](getting-started.md) | Install `ml1`, scaffold an app, compile, test, run, deploy. |
 | [Thinking in MinLang](thinking-in-minlang.md) | The mental shift: declare systems instead of hand-implementing behavior in many layers. |
 | [Language reference](language-reference.md) | Human-readable reference for bundle v6, including module/package and compile dependency model. |
 | [Style guide](style-guide.md) | Authoring patterns that keep the validator happy on the first pass. |
-| [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, wireframe review, accessibility. |
+| [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, ASCII UI design bridge, wireframe review, accessibility. |
 | [CLI reference](cli.md) | Every `ml1` command and flag. |
 | [Cookbook](cookbook/index.md) | Recipes plus three complete programs: a [guestbook](cookbook/guestbook.md), the [task tracker](cookbook/task-tracker.md), and a [sales CRM](cookbook/crm-pipeline.md). |
 

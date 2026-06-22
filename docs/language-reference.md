@@ -1,6 +1,6 @@
 ---
 title: Language reference
-nav_order: 4
+nav_order: 5
 ---
 
 # Language reference (bundle v6)
@@ -213,6 +213,8 @@ The full v3/v4 vocabulary (anything else is rejected, D18/D23):
 **All copy is static string literals** (D19). Titles, bodies, hints, labels, and every enum-copy entry live in the `.ml`; compilers and emitters must never invent, default, or hardcode user-facing text.
 
 The first screen in declaration order whose `when` holds is the active one. Multi-screen flow is driven by a small UI-state entity plus navigation actions — see the [style guide](style-guide.md).
+
+**Screen-first authoring:** `ml1 design ui` reads a source `.mlui` file (structured `--- screen` headers) and generates MinLang `screen` declarations using only the fixed vocabulary above. It validates all referenced actions, effects, and queries against the existing `.ml` before emitting. The compile gate (`ml1 validate`) remains the authority. See [UI & UX](ui-ux.md) and [CLI](cli.md#ml1-design-ui).
 
 ## Theme
 

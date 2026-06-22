@@ -1,6 +1,6 @@
 ---
 title: CLI reference
-nav_order: 7
+nav_order: 8
 ---
 
 # `ml1` CLI reference
@@ -23,6 +23,7 @@ ml1 <command>
 | [`ai`](#ml1-ai-v6) | `.mlai` index/search/context/patch-plan workflows |
 | [`update`](#ml1-update) | Update the compiler, runtime pins, and generated output |
 | [`design tokens`](#ml1-design-tokens) | Figma/Tokens Studio/W3C export → `theme` block |
+| [`design ui`](#ml1-design-ui) | Source `.mlui` → MinLang `screen` declarations |
 | [`tokens` / `parse` / `ir`](#inspection-commands) | Inspect the token stream / AST / IR |
 | [`assets`](#ml1-assets) | Realize or verify declared assets (game targets) |
 
@@ -171,6 +172,40 @@ Converts a Figma Variables, Tokens Studio, or W3C design-tokens JSON export into
 - **`--apply <app.ml>`:** splice the block into the `.ml` — replaces an existing `theme Default` block byte-exactly or appends at EOF. **Idempotent**: a second run reports "already up to date" and changes nothing.
 - Unmapped tokens are `note:` lines, never errors. Alias cycles, invalid JSON, zero mapped tokens, and a non-lexing `--apply` target exit non-zero.
 - Never touches the network. The web compile gate (vocabulary + AA contrast) remains the enforcement point.
+
+## `ml1 design ui`
+
+```bash
+ml1 design ui <sketch.mlui> --app <app.ml>
+ml1 design ui <sketch.mlui> --app <app.ml> --check
+ml1 design ui <sketch.mlui> --app <app.ml> --apply
+```
+
+Imports a source `.mlui` file (structured headers + freehand ASCII preview) and generates MinLang `screen` declarations against an existing `.ml` app.
+
+The source `.mlui` format uses `--- screen <Name>` sections with a YAML-like header block between `---` delimiters:
+
+```text
+--- screen Board
+when: Workspace.view == 'board'
+title: Task board
+hint: Manage tasks.
+board: TaskList
+primary: { label: Add task  action: CreateTask }
+button: { label: Projects  action: OpenProjects }
+---
+... freehand ASCII preview for human review ...
+```
+
+| Flag | Meaning |
+|---|---|
+| *(default)* | Print the generated `screen` blocks to stdout |
+| `--check` | Verify the `.ml` already has matching blocks between `// mlui:begin screens` / `// mlui:end screens` markers; exit non-zero on mismatch or missing markers |
+| `--apply` | Splice generated blocks into the `.ml` between the markers (idempotent); if no markers exist, append with a reminder comment |
+
+The importer validates all referenced actions, effects, queries, and enum fields against the existing `.ml` before emitting anything. It never generates entities, constraints, actions, queries, or tests. The compile gate (`ml1 validate`) remains the enforcement point.
+
+See [UI & UX](ui-ux.md#reviewing-ui-wireframes-and-previews) for the authoring workflow.
 
 ## Inspection commands
 

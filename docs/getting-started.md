@@ -1,6 +1,6 @@
 ---
 title: Getting started
-nav_order: 2
+nav_order: 3
 ---
 
 # Getting started
@@ -48,8 +48,10 @@ cd my-app
 This creates:
 
 - `my-app.ml` — **your entire application**. It starts as a guided "welcome to MinLang" tour you replace with your own domain.
+- `minlang.toml` — a single-module project manifest; `ml1 graph`, `ml1 explain project`, and `ml1 compile --project .` work out of the box.
+- `ui/design/screens.mlui` — a starter source sketch for screen design (see step 4b below).
 - `app/` — a thin Next.js shell consuming the published `@minlang/*` runtime packages from npm. No submodule, no monorepo.
-- `Makefile` — `compile`, `test`, `dev`, `build`, `update` targets.
+- `Makefile` — `compile`, `design-ui`, `test`, `dev`, `build`, `update` targets.
 - A GitHub Actions workflow that verifies and deploys on push.
 - `AGENTS.md` / `CLAUDE.md` — instructions for coding agents, including where to fetch the language rules.
 
@@ -64,6 +66,18 @@ make dev                 # http://localhost:3111
 ```
 
 Everything under `app/generated/` is compiler output: committed to git, never hand-edited. If you want to change the app, change `my-app.ml` and recompile.
+
+### 4b. Sketch-first screen authoring (optional)
+
+For screen-heavy work, sketch first in `ui/design/screens.mlui`, then import:
+
+```bash
+$EDITOR ui/design/screens.mlui           # structured .mlui header + ASCII preview
+make design-ui                           # generate screen blocks + splice into my-app.ml
+make compile                             # validate + compile; compare generated/ui/wire/*.mlui
+```
+
+The structured `.mlui` format has one `--- screen <Name>` section per intended screen, a header block with the exact MinLang bindings, and an optional freehand ASCII preview body for human review. The importer (`ml1 design ui`) validates all referenced actions, effects, and queries against the existing `.ml` before writing anything. `make design-ui` is `ml1 design ui … --apply`; `--check` verifies the `.ml` already matches. See [UI & UX](ui-ux.md) for the full format.
 
 For multi-file package workflows (v6 manifests, lockfiles, compile dependency closure), see the repository examples:
 
