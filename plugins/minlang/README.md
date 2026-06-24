@@ -9,6 +9,15 @@ All commands are namespaced `/minlang:*`. See [COMMANDS.md](COMMANDS.md) and
 `commands/commands.json` for the full inventory (23 commands across migration,
 authoring, refactoring, diagnostics, and creative workflows).
 
+## Published documentation
+
+The public site documents this plugin command by command:
+
+- Overview & install: <https://codeshift-ai-solutions.github.io/minlang-releases/claude-plugin/>
+- Every command: <https://codeshift-ai-solutions.github.io/minlang-releases/claude-plugin/commands.html>
+- Agents & tooling: <https://codeshift-ai-solutions.github.io/minlang-releases/claude-plugin/agents-and-tooling.html>
+- `ml1` CLI reference: <https://codeshift-ai-solutions.github.io/minlang-releases/cli.html>
+
 ## Authority
 
 Every producing command loads the **authority-preflight** skill and reads the

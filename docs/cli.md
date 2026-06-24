@@ -11,28 +11,69 @@ The MinLang compiler ships as a single binary, `ml1`. Install it via the channel
 ml1 <command>
 ```
 
+**Authoring & compile**
+
 | Command | Purpose |
 |---|---|
+| [`init`](#ml1-init) | Scaffold a new MinLang repository |
 | [`validate`](#ml1-validate) | Validate a `.ml` file against the language rules |
-| [`compile`](#ml1-compile) | Full pipeline: validate + generate the app |
+| [`compile`](#ml1-compile) | Full pipeline: validate + generate the app (single file or project) |
+| [`watch`](#ml1-watch) | Recompile the affected slice once on demand |
+| [`daemon`](#ml1-daemon) | Manage warm background compile state (start/stop/status) |
+| [`test`](#ml1-test) | Select impacted tests/modules for a change |
+| [`build`](#ml1-build) | Probe a platform toolchain and initialize the runtime |
+
+**Graph, packages & dependencies**
+
+| Command | Purpose |
+|---|---|
+| [`graph`](#ml1-graph) | Emit the canonical project graph JSON |
+| [`package`](#ml1-package-v6) | Resolve lockfiles, graph closure, registry/vendor/cache/update workflows |
+| [`deps`](#ml1-deps) | Verify dependency capsules in the cache |
+| [`cache`](#ml1-cache) | Incremental compile cache maintenance (verify/prune/stats) |
+| [`migrate`](#ml1-migrate) | Migrate single-file apps to modules, or migrate a Godot fixture |
+| [`refactor`](#ml1-refactor) | Plan/preview/apply/verify/rollback graph-wide refactors in waves |
+
+**LLM & agent context**
+
+| Command | Purpose |
+|---|---|
 | [`features`](#ml1-features) | Print the current language feature catalog for LLMs |
 | [`support`](#ml1-support) | Write an agent-facing language support brief |
-| [`package`](#ml1-package-v6) | Resolve lockfiles, graph closure, registry/vendor/cache/update workflows |
 | [`explain`](#ml1-explain-v6) | Graph-backed project/module/dependency/edit/review context reports |
 | [`llm`](#ml1-llm-v6) | Minimized sidecar generation/check workflows |
 | [`ai`](#ml1-ai-v6) | `.mlai` index/search/context/patch-plan workflows |
-| [`update`](#ml1-update) | Update the compiler, runtime pins, and generated output |
+| [`editor`](#ml1-editor) | LSP-style graph payloads: diagnostics, completion, definition, rename |
+| [`language claude-plugin`](#ml1-language-claude-plugin) | Print Claude Code plugin install guidance |
+
+**Design, assets, performance & updates**
+
+| Command | Purpose |
+|---|---|
 | [`design tokens`](#ml1-design-tokens) | Figma/Tokens Studio/W3C export → `theme` block |
 | [`design ui`](#ml1-design-ui) | Source `.mlui` → MinLang `screen` declarations |
-| [`tokens` / `parse` / `ir`](#inspection-commands) | Inspect the token stream / AST / IR |
 | [`assets`](#ml1-assets) | Realize or verify declared assets (game targets) |
+| [`perf`](#ml1-perf) | Compile/generated performance budgets and audits |
+| [`update`](#ml1-update) | Update the compiler, language pin, runtime deps, and generated output |
+| [`tokens` / `parse` / `ir`](#inspection-commands) | Inspect the token stream / AST / IR |
 
-Exit codes are uniform: `0` on success, non-zero on any error (one exception for `update --check`, noted below).
+Running `ml1` with no arguments prints the full usage summary. Exit codes are uniform: `0` on success, non-zero on any error (one exception for `update --check`, noted below). Most commands accept `--project <dir>` to operate on a manifest-backed project graph instead of a single file.
+
+Driving these commands from Claude Code? The [MinLang Claude Code plugin](claude-plugin/index.md) wraps the most common workflows (`validate`, `compile`, `graph`, `update --check`, and more) in [slash commands](claude-plugin/commands.md) with bundle-authority discipline.
+
+## `ml1 init`
+
+```bash
+ml1 init <name> [--target web|godot]
+```
+
+Scaffolds a new MinLang repository named `<name>`. The default target is `web`; pass `--target godot` for a game project. The scaffold writes a starter `.ml`, the project pin (`minlang.json`), and the `Makefile` targets (`compile`, `test`, `validate`, `dev`) the rest of the workflow relies on.
 
 ## `ml1 validate`
 
 ```bash
 ml1 validate <file>
+ml1 validate --project <dir>
 ```
 
 Runs the full validator and prints either `validation ok` or the diagnostics — each names the rule, the offending line, and the source span:
@@ -64,6 +105,104 @@ Web-target specifics:
 - A `theme` block is gated before anything is planned: unmapped keys, malformed hex values, and WCAG AA contrast violations fail the compile.
 - Output is **deterministic** — same `.ml`, same bytes. An inventory lands in `generated/manifest.json`; the web target also emits `generated/MINLANG_LANGUAGE_SUPPORT.md` for language-gap tracking.
 - **Pruning:** after a successful write, files listed in the *previous* `manifest.json` that the new plan no longer produces are deleted (plus emptied directories). Only manifest-listed paths are ever deleted — handwritten files in the output tree are never touched.
+
+## `ml1 watch`
+
+```bash
+ml1 watch --project <dir>
+```
+
+Recompiles the **affected slice once** for a project graph: it detects what changed and rebuilds only the impacted modules, then exits. Use it as a fast, single-shot incremental compile rather than a long-running file watcher (for a persistent warm process, use `ml1 daemon`).
+
+## `ml1 daemon`
+
+```bash
+ml1 daemon start  [--project <dir>]
+ml1 daemon stop   [--project <dir>]
+ml1 daemon status [--project <dir>]
+```
+
+Manages a warm background compile process that keeps the project graph and incremental cache hot between edits, so subsequent compiles are faster. `start` launches it, `stop` tears it down, and `status` reports whether it is running.
+
+## `ml1 test`
+
+```bash
+ml1 test affected [--project <dir>]
+```
+
+Selects the tests and modules impacted by the current change set, so a large project can run only the relevant slice of its suite. It reports the selection; run the chosen tests through your `make test` / runtime test harness.
+
+## `ml1 graph`
+
+```bash
+ml1 graph [--project <dir>]
+```
+
+Emits the **canonical project graph JSON** — modules, exports, imports, and the closed compile closure. This is the machine-readable form behind `/minlang:inspect-graph` and the basis for explain/editor/refactor reports.
+
+## `ml1 build`
+
+```bash
+ml1 build --platform desktop|web-wasm|ios-arm64|android [--project <dir>] [--headless]
+```
+
+Probes the toolchain for a target platform and initializes the runtime for it. `--headless` runs without launching a UI (useful in CI). Missing toolchains are reported as actionable diagnostics rather than hard failures where possible.
+
+## `ml1 deps`
+
+```bash
+ml1 deps precompile [--project <dir>]
+```
+
+Verifies that the dependency capsules referenced by `minlang.lock` are present and valid in the local cache, precompiling them so a later `compile`/`watch` does not have to. Imports are compile dependencies; this warms them ahead of time.
+
+## `ml1 cache`
+
+```bash
+ml1 cache verify [--project <dir>]
+ml1 cache prune  [--project <dir>]
+ml1 cache stats  [--project <dir>]
+```
+
+Maintains the content-addressed incremental compile cache used by `compile --incremental`, `watch`, and the daemon. `verify` checks integrity, `prune` removes unreferenced entries, and `stats` prints cache usage.
+
+## `ml1 migrate`
+
+```bash
+ml1 migrate modules <source.ml> [--project <dir>] [--dry-run|--write]
+ml1 migrate analyze --from godot --project <dir>
+ml1 migrate --from godot --project <dir> --dry-run
+ml1 migrate verify --project <dir>
+```
+
+Two migration paths:
+
+- **`migrate modules`** splits a single-file app into a manifest-backed module project. `--dry-run` plans the writes without touching disk; `--write` performs them.
+- **`migrate ... --from godot`** analyzes, plans (dry-run), and verifies migration of a Godot fixture. The Godot migration path refuses dirty git trees and creates a branch/commits on clean repos.
+
+## `ml1 refactor`
+
+```bash
+ml1 refactor plan --intent <text> --scope <selector> [--project <dir>] [--out <plan.json>]
+ml1 refactor preview <plan.json>
+ml1 refactor apply <plan.json> --wave <id> [--project <dir>] [--check]
+ml1 refactor verify <plan.json> [--wave <id>] [--project <dir>]
+ml1 refactor rollback <plan.json> --wave <id> [--project <dir>] [--check]
+ml1 refactor status <plan.json>
+ml1 refactor shard <plan.json> --max-tokens <n>
+```
+
+Graph-aware refactoring for large changes, organized into **waves** so an agent can apply, verify, and roll back one bounded step at a time:
+
+| Subcommand | Purpose |
+|---|---|
+| `plan` | Produce a refactor plan from an intent and a scope selector |
+| `preview` | Summarize waves, API impact, checks, and risks before applying |
+| `apply` | Apply one wave (`--check` for a dry run) |
+| `verify` | Verify a wave (or the whole plan) compiles and passes checks |
+| `rollback` | Undo a wave (`--check` for a dry run) |
+| `status` | Print wave statuses and blockers |
+| `shard` | Emit token-bounded patch shards for tiny-context agent loops |
 
 ## `ml1 package` (v6)
 
@@ -113,6 +252,30 @@ ml1 ai apply-patch <patch.json> [--project <dir>]
 
 Provides `.mlai` index/search/context-pack workflows for tiny-token agent loops. Outputs are deterministic derivatives of the same compile graph.
 
+## `ml1 editor`
+
+```bash
+ml1 editor diagnostics [--project <dir>]
+ml1 editor completion  [--project <dir>]
+ml1 editor definition <symbol> [--project <dir>]
+ml1 editor references <symbol> [--project <dir>]
+ml1 editor rename-preview --from <a> --to <b> [--write] [--project <dir>]
+ml1 editor ai-context <module> [--project <dir>]
+ml1 editor graph [--project <dir>]
+```
+
+LSP-style, graph-backed payloads for editors and tooling (the VS Code extension under `editor/minlang/` consumes these):
+
+| Subcommand | Output |
+|---|---|
+| `diagnostics` | Cross-module diagnostics JSON for the whole graph |
+| `completion` | Module + export completion payload |
+| `definition <symbol>` | Exported declaration locations for a symbol |
+| `references <symbol>` | Word-boundary references to a symbol |
+| `rename-preview --from --to` | Preview a rename (`--write` to apply it) |
+| `ai-context <module>` | The same safe-edit context as `explain edit` |
+| `graph` | Canonical graph JSON preview |
+
 ## `ml1 features`
 
 ```bash
@@ -126,6 +289,14 @@ knows: core declarations, supported field shapes, deterministic rules,
 presentation blocks, screen controls, derive builtins, deterministic deal, web
 target support, and explicit non-features. Use this as the first quick context
 load before writing MinLang; the published bundle remains authoritative.
+
+## `ml1 language claude-plugin`
+
+```bash
+ml1 language claude-plugin [--out <path>]
+```
+
+Prints the Claude Code plugin install commands (marketplace add + install) without requiring Claude Code itself — handy for other agents or for copy-paste into onboarding docs. See the [Claude Code plugin](claude-plugin/index.md) pages for the full plugin reference.
 
 ## `ml1 support`
 
@@ -142,21 +313,22 @@ accept yet, but you still want an agent-readable gap brief and follow-up prompt.
 
 ```bash
 ml1 update [--check] [--app-dir <dir>] [--repo <owner/repo>]
-           [--skip-self] [--skip-deps] [--skip-compile]
+           [--skip-self] [--skip-language] [--skip-deps] [--skip-compile]
 ```
 
-Three steps, in order:
+Steps, in order:
 
 1. **Self-update** — replace the `ml1` binary from the latest GitHub release of the releases repo (tokenless; uses the public `releases/latest` redirect). On Windows it prints the PowerShell reinstall one-liner instead of replacing the running exe.
-2. **Dependencies** — bump the `@minlang/*` (and `create-minlang-app`) pins in `<app-dir>/package.json` to `^<npm latest>`, then `pnpm install --no-frozen-lockfile`.
-3. **Recompile** — recompile the repo's root `.ml` with `--target web --out <app-dir>`.
+2. **Language pin** — advance the project's language-bundle pin and surface migration notes.
+3. **Dependencies** — bump the `@minlang/*` (and `create-minlang-app`) pins in `<app-dir>/package.json` to `^<npm latest>`, then `pnpm install --no-frozen-lockfile`.
+4. **Recompile** — recompile the repo's root `.ml` with `--target web --out <app-dir>`.
 
 | Flag | Meaning |
 |---|---|
 | `--check` | Report the plan (current → latest per item) without mutating anything. **Exit code 1 when updates are available, 0 when current** — gate CI on it |
 | `--app-dir <dir>` | App directory (default `app`) |
 | `--repo <owner/repo>` | Releases repo (default `codeshift-ai-solutions/minlang-releases`; the `MINLANG_REPO` env var overrides the default, `--repo` beats both) |
-| `--skip-self` / `--skip-deps` / `--skip-compile` | Limit the steps |
+| `--skip-self` / `--skip-language` / `--skip-deps` / `--skip-compile` | Limit the steps |
 
 Missing tools/files and `workspace:` pins degrade to one-line skip notes rather than errors. Output is one line per item plus a `summary:` line. Scaffolded apps alias this as `make update`.
 
@@ -207,6 +379,20 @@ The importer validates all referenced actions, effects, queries, and enum fields
 
 See [UI & UX](ui-ux.md#reviewing-ui-wireframes-and-previews) for the authoring workflow.
 
+## `ml1 perf`
+
+```bash
+ml1 perf compile [--project <dir>] [--scenario <name>] [--changed <n>] [--budget-ms <n>] [--json]
+ml1 perf generated [--manifest <path>] [--max-full-scans <n>] [--max-fallbacks <n>]
+ml1 perf audit [--manifest <path>]
+```
+
+Performance budgets for the compiler and the generated runtime:
+
+- **`perf compile`** measures compile time for a scenario (optionally simulating `--changed <n>` modules) against a `--budget-ms` ceiling; `--json` emits machine-readable results for CI.
+- **`perf generated`** inspects the generated output for full-scan / fallback hotspots against `--max-full-scans` and `--max-fallbacks` thresholds.
+- **`perf audit`** fails on generated full-scan regressions — the CI gate for runtime query performance.
+
 ## Inspection commands
 
 For debugging and tooling:
@@ -216,6 +402,8 @@ ml1 tokens <file>    # dump the lexed token stream
 ml1 parse <file>     # parse and dump the AST
 ml1 ir <file>        # lower to canonical IR JSON on stdout
 ```
+
+Each also accepts `--project <dir>` to operate on a project graph.
 
 ## `ml1 assets`
 

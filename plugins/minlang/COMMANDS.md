@@ -40,6 +40,11 @@ Optional deep workflows may delegate to:
 
 Agents supplement commands; they do not replace verification.
 
+## Published documentation
+
+Each command is documented on the public site, grouped by family:
+<https://codeshift-ai-solutions.github.io/minlang-releases/claude-plugin/commands.html>
+
 ## Stable bundle URL
 
 `https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md`

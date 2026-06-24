@@ -58,6 +58,7 @@ Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/co
 | [Style guide](style-guide.md) | Authoring patterns that keep the validator happy on the first pass. |
 | [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, ASCII UI design bridge, wireframe review, accessibility. |
 | [CLI reference](cli.md) | Every `ml1` command and flag. |
+| [Claude Code plugin](claude-plugin/index.md) | The MinLang Claude Code plugin: install, [every slash command](claude-plugin/commands.md), [agents and tooling](claude-plugin/agents-and-tooling.md). |
 | [Cookbook](cookbook/index.md) | Recipes plus three complete programs: a [guestbook](cookbook/guestbook.md), the [task tracker](cookbook/task-tracker.md), and a [sales CRM](cookbook/crm-pipeline.md). |
 
 ## The canonical rules
