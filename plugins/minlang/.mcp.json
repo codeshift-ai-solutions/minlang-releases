@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"minlang-ml1": {
+			"command": "python3",
+			"args": ["${CLAUDE_PLUGIN_ROOT}/mcp/ml1-bridge.py"],
+			"env": {}
+		}
+	}
+}

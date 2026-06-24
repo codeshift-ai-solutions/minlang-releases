@@ -1,0 +1,20 @@
+{
+	"$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+	"name": "minlang-releases",
+	"description": "MinLang compiler distribution and Claude Code plugin marketplace",
+	"version": "1.0.0",
+	"owner": {
+		"name": "CodeShift AI Solutions",
+		"url": "https://github.com/codeshift-ai-solutions"
+	},
+	"plugins": [
+		{
+			"name": "minlang",
+			"source": "./plugins/minlang",
+			"description": "Author, migrate, refactor, validate, and release-check MinLang apps",
+			"category": "development",
+			"tags": ["minlang", "compiler", "migration", "validation"],
+			"strict": true
+		}
+	]
+}

@@ -1,0 +1,244 @@
+{
+	"contract_version": "1",
+	"stable_bundle_url": "https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md",
+	"authority_skill": "authority-preflight",
+	"forbidden_paths": ["app/generated/", ".env"],
+	"forbidden_tokens": ["now()", "today()", "random()", "current_user"],
+	"required_phrases": [
+		"authority-preflight",
+		"app/generated",
+		".env"
+	],
+	"commands": [
+		{
+			"name": "migrate-project",
+			"slash": "/minlang:migrate-project",
+			"family": "migration",
+			"file": "migrate-project.md",
+			"purpose": "Audit an existing app and create a phased migration map into MinLang",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> || make compile"
+		},
+		{
+			"name": "migrate-domain",
+			"slash": "/minlang:migrate-domain",
+			"family": "migration",
+			"file": "migrate-domain.md",
+			"purpose": "Extract entities, constraints, actions, and queries from one feature area",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file>"
+		},
+		{
+			"name": "migrate-screen",
+			"slash": "/minlang:migrate-screen",
+			"family": "migration",
+			"file": "migrate-screen.md",
+			"purpose": "Turn an existing UI route or component into MinLang screen blocks",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> && make compile"
+		},
+		{
+			"name": "migrate-tests",
+			"slash": "/minlang:migrate-tests",
+			"family": "migration",
+			"file": "migrate-tests.md",
+			"purpose": "Convert existing unit/e2e expectations into MinLang tests",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "make test"
+		},
+		{
+			"name": "migration-ledger",
+			"slash": "/minlang:migration-ledger",
+			"family": "migration",
+			"file": "migration-ledger.md",
+			"purpose": "Track migrated slices, remaining shell code, blockers, and verification",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "none"
+		},
+		{
+			"name": "author-app",
+			"slash": "/minlang:author-app",
+			"family": "authoring",
+			"file": "author-app.md",
+			"purpose": "Interview the user, draft the .ml, validate, fix, and compile",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> && make compile && make test"
+		},
+		{
+			"name": "add-feature",
+			"slash": "/minlang:add-feature",
+			"family": "authoring",
+			"file": "add-feature.md",
+			"purpose": "Make one product change by editing only MinLang source",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> && make compile && make test"
+		},
+		{
+			"name": "model-domain",
+			"slash": "/minlang:model-domain",
+			"family": "authoring",
+			"file": "model-domain.md",
+			"purpose": "Produce the entity/action/query model before screens",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file>"
+		},
+		{
+			"name": "design-ui",
+			"slash": "/minlang:design-ui",
+			"family": "authoring",
+			"file": "design-ui.md",
+			"purpose": "Sketch screens first, then generate or update MinLang screen blocks",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 design ui <sketch.mlui> --app <app.ml> --check"
+		},
+		{
+			"name": "validate-authority",
+			"slash": "/minlang:validate-authority",
+			"family": "authoring",
+			"file": "validate-authority.md",
+			"purpose": "Run the Creator/Gatekeeper preflight plus ml1 validate",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "ml1 validate <file>"
+		},
+		{
+			"name": "pull-domain-logic",
+			"slash": "/minlang:pull-domain-logic",
+			"family": "refactoring",
+			"file": "pull-domain-logic.md",
+			"purpose": "Find domain logic hiding in React/API/shell code and move it into MinLang",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> && make compile"
+		},
+		{
+			"name": "dedupe-rules",
+			"slash": "/minlang:dedupe-rules",
+			"family": "refactoring",
+			"file": "dedupe-rules.md",
+			"purpose": "Detect duplicated validation, copy, and business rules across app code",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file>"
+		},
+		{
+			"name": "thin-shell",
+			"slash": "/minlang:thin-shell",
+			"family": "refactoring",
+			"file": "thin-shell.md",
+			"purpose": "Identify shell code that violates presentation-only boundaries",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "make compile"
+		},
+		{
+			"name": "generated-drift",
+			"slash": "/minlang:generated-drift",
+			"family": "refactoring",
+			"file": "generated-drift.md",
+			"purpose": "Compare .ml intent against generated output and stale hand edits",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "make compile"
+		},
+		{
+			"name": "explain-failure",
+			"slash": "/minlang:explain-failure",
+			"family": "diagnostics",
+			"file": "explain-failure.md",
+			"purpose": "Translate ml1 validate and compile errors into concrete fixes",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "ml1 validate <file>"
+		},
+		{
+			"name": "why-not-supported",
+			"slash": "/minlang:why-not-supported",
+			"family": "diagnostics",
+			"file": "why-not-supported.md",
+			"purpose": "Map a desired feature to current language support gaps",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "ml1 features"
+		},
+		{
+			"name": "inspect-graph",
+			"slash": "/minlang:inspect-graph",
+			"family": "diagnostics",
+			"file": "inspect-graph.md",
+			"purpose": "Explain project graph and compile closure",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "ml1 graph <file>"
+		},
+		{
+			"name": "release-check",
+			"slash": "/minlang:release-check",
+			"family": "diagnostics",
+			"file": "release-check.md",
+			"purpose": "Verify app compatibility with latest compiler, bundle, runtime, and generated output",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "ml1 update --check && make compile && make test"
+		},
+		{
+			"name": "product-interview",
+			"slash": "/minlang:product-interview",
+			"family": "creative",
+			"file": "product-interview.md",
+			"purpose": "Ask only the product questions needed to produce a valid MinLang app",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "none"
+		},
+		{
+			"name": "legacy-strangler",
+			"slash": "/minlang:legacy-strangler",
+			"family": "creative",
+			"file": "legacy-strangler.md",
+			"purpose": "Plan a slice-by-slice migration from a legacy app to MinLang",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "none"
+		},
+		{
+			"name": "boundary-police",
+			"slash": "/minlang:boundary-police",
+			"family": "creative",
+			"file": "boundary-police.md",
+			"purpose": "Scan for logic that belongs in .ml but leaked into generated or shell code",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": false,
+			"primary_verification": "make compile"
+		},
+		{
+			"name": "demo-from-idea",
+			"slash": "/minlang:demo-from-idea",
+			"family": "creative",
+			"file": "demo-from-idea.md",
+			"purpose": "Go from one paragraph idea to compiled app, tests, and dev server",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 validate <file> && make compile && make test && make dev"
+		},
+		{
+			"name": "bundle-upgrade-coach",
+			"slash": "/minlang:bundle-upgrade-coach",
+			"family": "creative",
+			"file": "bundle-upgrade-coach.md",
+			"purpose": "Guide an app across bundle versions using ml1 update and migration notes",
+			"shared_skill": "authority-preflight",
+			"produces_minlang": true,
+			"primary_verification": "ml1 update --check"
+		}
+	]
+}

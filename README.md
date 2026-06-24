@@ -25,6 +25,17 @@ Guides, the language reference, and the cookbook:
 
 [Download the latest language bundle](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
 
+## Claude Code plugin
+
+| Step | Command |
+|------|---------|
+| Add marketplace | `/plugin marketplace add codeshift-ai-solutions/minlang-releases` |
+| Install plugin | `/plugin install minlang@minlang-releases` |
+| Validate locally | `make check-claude-plugin` |
+
+The plugin provides `/minlang:*` commands for authoring, migration, refactoring,
+diagnostics, and release checks. It does not bundle `ml1`.
+
 ## Start development with an AI coding agent
 
 Paste this prompt into any LLM coding agent (Claude Code, Cursor,

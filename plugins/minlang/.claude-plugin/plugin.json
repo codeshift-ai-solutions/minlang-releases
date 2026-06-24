@@ -1,0 +1,22 @@
+{
+	"$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+	"name": "minlang",
+	"displayName": "MinLang",
+	"version": "0.7.7",
+	"description": "Author, migrate, refactor, validate, and release-check MinLang applications with bundle authority discipline",
+	"author": {
+		"name": "CodeShift AI Solutions",
+		"url": "https://github.com/codeshift-ai-solutions"
+	},
+	"homepage": "https://codeshift-ai-solutions.github.io/minlang-releases/",
+	"repository": "https://github.com/codeshift-ai-solutions/minlang-releases",
+	"license": "MIT",
+	"keywords": ["minlang", "compiler", "migration", "validation", "web-app"],
+	"skills": "./skills/",
+	"commands": "./commands/",
+	"hooks": "./hooks/hooks.json",
+	"mcpServers": "./.mcp.json",
+	"experimental": {
+		"monitors": "./monitors/monitors.json"
+	}
+}

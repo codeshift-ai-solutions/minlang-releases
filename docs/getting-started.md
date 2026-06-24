@@ -95,6 +95,16 @@ Writing MinLang with an AI agent? Point it at the canonical language bundle firs
 https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md
 ```
 
+### Claude Code plugin (optional)
+
+```text
+/plugin marketplace add codeshift-ai-solutions/minlang-releases
+/plugin install minlang@minlang-releases
+```
+
+Or run `ml1 language claude-plugin` for install guidance. The plugin adds
+`/minlang:*` commands but does not replace the language bundle above.
+
 ## 5. Theming from Figma (optional)
 
 If you have Figma design tokens (native Variables export, Tokens Studio, or W3C design-tokens JSON):
