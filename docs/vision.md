@@ -5,7 +5,7 @@ nav_order: 2
 
 # MinLang Vision
 
-> **About this page.** This page describes the direction and long-term purpose of MinLang. The **shipping language today** is bundle v7 — a deterministic, constraint-first language that compiles to C#/Godot and TypeScript/React web apps. The broader constructs shown here (`app`, `crud`, `workflow`, `dashboard`, `target`, domain packs, etc.) are **aspirational and not yet available**. All such examples are labeled **(future)** or **(illustrative)**. The bundle is the single source of truth for what you can use today: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
+> **About this page.** This page describes the direction and long-term purpose of MinLang. The **shipping language today** is bundle v10 — a deterministic, constraint-first language that compiles to C#/Godot and TypeScript/React web apps. The broader constructs shown here (`app`, `crud`, `workflow`, `dashboard`, `target`, domain packs, etc.) are **aspirational and not yet available**. All such examples are labeled **(future)** or **(illustrative)**. The bundle is the single source of truth for what you can use today: [minlang-language-bundle.md](https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md).
 
 ---
 
@@ -45,7 +45,7 @@ MinLang is based on a simple observation:
 
 A business app, game system, simulation, or workflow may contain thousands of lines of code, but the actual human intent behind that code is often much smaller.
 
-**What MinLang looks like today** (shipping, v7):
+**What MinLang looks like today** (shipping, v10):
 
 ```minlang
 entity Patient {
@@ -357,7 +357,7 @@ The workflow becomes:
 | Deal step, extended screens, scoring derives | Shipping (v4+) |
 | Full-app web declarations (secret, config, service, pipeline, prompt, schema, effect) | Shipping (v5+) |
 | Multi-file modules, package manifests, lockfiles, compile graph | Shipping (v6) |
-| Unified trigger + schedule surfaces | Shipping (v7) |
+| Unified trigger + schedule surfaces | Shipping (since v7) |
 | ASCII UI design bridge (`ml1 design ui`) | Shipping (v0.6.4) |
 | LLM toolchain (sidecars, index, explain, refactor, AI-safe agents) | Shipping (v6) |
 | Domain packs | Not yet shipped |

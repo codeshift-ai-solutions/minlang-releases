@@ -72,4 +72,6 @@ runs:
 
         chmod +x "${dest}/"ml1* 2>/dev/null || true
         echo "${dest}" >> "$GITHUB_PATH"
-        "${dest}/ml1" | head -1
+        # Smoke test. `--version` writes one short line, so no pipe is needed —
+        # piping the usage screen into `head` made ml1 panic on SIGPIPE.
+        "${dest}/ml1" --version || "${dest}/ml1" version

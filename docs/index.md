@@ -54,7 +54,7 @@ Canonical bundle (authority): [minlang-language-bundle.md](https://github.com/co
 | [Vision](vision.md) | The purpose and long-term direction of MinLang — AI-first, intent compression, the 50× ambition. |
 | [Getting started](getting-started.md) | Install `ml1`, scaffold an app, compile, test, run, deploy. |
 | [Thinking in MinLang](thinking-in-minlang.md) | The mental shift: declare systems instead of hand-implementing behavior in many layers. |
-| [Language reference](language-reference.md) | Human-readable reference for bundle v7, including trigger/schedule and module/package model. |
+| [Language reference](language-reference.md) | Human-readable reference for bundle v10, including full-app fidelity (pipelines, prompts, services, result screens, themes), trigger/schedule, and the module/package model. |
 | [Style guide](style-guide.md) | Authoring patterns that keep the validator happy on the first pass. |
 | [UI & UX](ui-ux.md) | How screens become widgets, theming, Figma import, skins, ASCII UI design bridge, wireframe review, accessibility. |
 | [CLI reference](cli.md) | Every `ml1` command and flag. |

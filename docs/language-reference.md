@@ -3,15 +3,15 @@ title: Language reference
 nav_order: 5
 ---
 
-# Language reference (bundle v7)
+# Language reference (bundle v10)
 
-The complete human-readable reference for MinLang as defined by language bundle **v7**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
+The complete human-readable reference for MinLang as defined by language bundle **v10**. This page is a derivative: the canonical authority is the versioned bundle attached to every release —
 
 ```text
 https://github.com/codeshift-ai-solutions/minlang-releases/releases/latest/download/minlang-language-bundle.md
 ```
 
-— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1-v6 remains valid under v7.
+— and **on any conflict, the bundle wins**. Bundles are additive: every program valid under v1-v9 remains valid under v10.
 
 ## Package/module surface (v6+)
 
@@ -315,7 +315,7 @@ Every critical constraint requires the **test triad** (D11): a success test, a f
 
 ## The validator: 49 detectors
 
-`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4), D28–D35 full-app declarations (v5), D36–D45 package/module/compile-graph rules (v6), and D46–D49 trigger/schedule safety and boundary rules (v7). Optional-construct detectors only fire when the construct is declared.
+`ml1 validate` (and the generation contract LLM authors follow) enforces these detectors. D1–D13 cover behavior, D14–D17 presentation (v2), D18–D21 screens/derive (v3), D22–D27 deal/extended screens/scoring derives (v4), D28–D35 full-app declarations (v5), D36–D45 package/module/compile-graph rules (v6), D46–D49 trigger/schedule safety and boundary rules (v7), D50–D65 presentation and persistence rules (v8), D66–D71 multi-user rules (v9), and D73–D81 full-app fidelity rules (v10). Optional-construct detectors only fire when the construct is declared.
 
 | ID | Rejects | Why |
 |----|---------|-----|
